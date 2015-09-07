@@ -16,7 +16,7 @@ so some of these changes might be a little crude in their implementation:
 HTML table hackery there).
 - Moved the compliment text down a bit so that it doesn't block the viewer's reflection as much.
 - Switched the weather from OpenWeatherMap to Dark Sky's forecast.io.  This requires getting your own
-free API key (it's easy) from developer.forecast.io and setting it and your lat/lon in js/config.js.
+free API key (it's easy) from [developer.forecast.io](developer.forecast.io) and setting it and your lat/lon in js/config.js.
 You get 1000 free requests a day, so I have my mirror update once every fifteen minutes instead of
 every minute.  Due to cross site scripting protections, using forecast.io also requires the use of
 a proxy.php that I modified from the [unofficial forecast.io Javascript library by Ian Tearle](https://github.com/iantearle/forecast.io-javascript-api).
