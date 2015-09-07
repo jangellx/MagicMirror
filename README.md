@@ -12,7 +12,7 @@ warm LCD doesn't fog when used as a bathroom mirror.
 
 I tweaked Micheal's code a bit to my peculiarities.  It's been a long time since I've done any Javascript,
 so some of these changes might be a little crude in their implementation:
-- Display time as a 12 hour clock instead of a 24 horu clock, displaying AM/PM under the seconds (ugly
+- Display time as a 12 hour clock instead of a 24 hour clock, displaying AM/PM under the seconds (ugly
 HTML table hackery there).
 - Moved the compliment text down a bit so that it doesn't block the viewer's reflection as much.
 - Switched the weather from OpenWeatherMap to Dark Sky's forecast.io.  This requires getting your own
