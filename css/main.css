@@ -67,6 +67,13 @@ body, html {
 	bottom: 50px;
 }
 
+.xxxsmall
+{
+	font-size: 10px;
+	letter-spacing: 0px;
+	font-family: "HelveticaNeue-Medium";
+}
+
 .xxsmall
 {
 	font-size: 15px;
@@ -107,6 +114,11 @@ body, html {
 .medium .wi {
 	line-height: 35px;
 }
+
+.xxdimmed
+{
+	color: #444;
+} 
 
 .xdimmed
 {

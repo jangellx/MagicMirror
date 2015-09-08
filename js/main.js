@@ -79,7 +79,7 @@ jQuery(document).ready(function($) {
 
 	(function updateTime()
 	{
-        var now  = moment();
+		var now  = moment();
         var date = now.format('dddd, MMMM Do, YYYY');
 
 		var isWarningTime = (now.hour() == 7) && (now.minute() >= 10) && (now.minute() < 20);		// Between 7:10 and 7:20 AM, turn the color read
@@ -250,6 +250,7 @@ jQuery(document).ready(function($) {
 		var iconTable = {
 			'clear-day':'wi-day-sunny',
 			'cloudy'               :'wi-day-cloudy',
+			'partly-cloudy-day'     :'wi-day-cloudy',
 			'wind'                 :'wi-windy',
 			'rain'                 :'wi-rain',
 			'thunderstorm'         :'wi-thunderstorm',
@@ -311,7 +312,8 @@ jQuery(document).ready(function($) {
 			$('.forecast').updateWithText(forecastTable, 1000);
 
 			// Update the summary text
-			$('.summary').updateWithText(json.hourly.summary + ' ' + json.daily.summary, 1000);
+			$('.summary').updateWithText(json.hourly.summary + ' ' + json.daily.summary + '<br><br>' +
+			                             '<span class="xxxsmall xxdimmed">last updated: ' + moment().format('h:mm ddd MMM D YYYY') + '</span>', 1000);
 		});
 
 		setTimeout(function() {
