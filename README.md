@@ -1,11 +1,11 @@
 # MagicMirror
-My variant of Michael Teeuw's Magic Mirror website
+My variant of Michael Teeuw's Magic Mirror project website files.
 
-If you're not familiar with the Magic Mirror project, Michael did a brilliant job building and documeting
+If you're not familiar with the Magic Mirror project, Michael did a brilliant job building and documenting
 it on [his site](http://michaelteeuw.nl/tagged/magicmirror).  Even better, he provided detailed instructions
 and all of his code so that you can build your own.
 
-I took that challenge and constructed my own bathroom Magic Mirror using a 32" LCD HDTV and a 31"x24" piece
+I took that challenge and constructed my Magic Mirror for our bathroom using a 32" LCD HDTV and a 31"x24" piece
 of two way glass, glueing the glass to the fromt of the case so that there is no border.  I also installed
 ShairPort so that Apple AirPlay can be used to play music through the TV's speakers.  A bonus is that the
 warm LCD doesn't fog when used as a bathroom mirror.
