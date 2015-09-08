@@ -30,3 +30,9 @@ without the decimals, adjusting margins, etc.
 
 For more information on the project, visit [Michael's site](http://michaelteeuw.nl/tagged/magicmirror).
 I'll have my own build information up in the near future as well.
+
+
+IMPORTANT INSTALLATATION NOTE:
+To work aroudn the fact that git wants to commit every single file in the dir, and doesn't have a decent
+way to avoid trackign comitted files, js/config.js was renamed to js/config-REMOVE-THIS-.js.  Remove the
+-REMOVE_THIS- bit after you clone/sync and you should be all set.
