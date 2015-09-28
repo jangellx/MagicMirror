@@ -14,7 +14,6 @@ body, html {
 }
 .wi {
 	line-height: 75px;
-
 }
 
 .top
@@ -26,12 +25,12 @@ body, html {
 .left
 {
 	position: absolute;
-	left: 50px;
+	left: 0px;
 }
 .right
 {
 	position: absolute;
-	right: 50px;
+	right: 0px;
 	text-align: right;
 }
 
@@ -229,6 +228,10 @@ body, html {
 .calendar-table .days {
 	padding-left: 20px;
 	text-align: right;
+}
+
+.mbta {
+	width: 225px;
 }
 
 .dishwasher {

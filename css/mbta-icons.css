@@ -1,0 +1,94 @@
+/*!
+ *  MBTA Icons
+ *  Icons from the MBTA for service alerts
+ *  ------------------------------------------------------------------------------
+  * http://realtime.mbta.com/Portal/Home/Download
+ */
+
+.mbtaEntry {
+	padding-left: 35px;
+	position:     relative;
+}
+
+[class^="mbtai-"],
+[class*=" mbtai-"] {
+  *margin-right: .3em;
+}
+
+[class^="mbtai-"]:before,
+[class*=" mbtai-"]:before {
+  display:  inline-block;
+  speak:    none;
+  width:    24;
+  height:   23;
+  float:    left;
+  position: absolute;
+  left:     5px
+}
+.mbtai-key_accessibility:before {
+  content: url("mbtaicons/ic_key_accessibility.png");
+}
+.mbtai-key_canceltrip:before {
+  content: url("mbtaicons/ic_key_canceltrip.png");
+}
+.mbtai-key_closure:before {
+  content: url("mbtaicons/ic_key_closure.png");
+}
+.mbtai-key_delay:before {
+  content: url("mbtaicons/ic_key_delay.png");
+}
+.mbtai-key_detour:before {
+  content: url("mbtaicons/ic_key_detour.png");
+}
+.mbtai-key_extraservice:before {
+  content: url("mbtaicons/ic_key_extraservice.png");
+}
+.mbtai-key_noservice:before {
+  content: url("mbtaicons/ic_key_noservice.png");
+}
+.mbtai-key_other:before {
+  content: url("mbtaicons/ic_key_other.png");
+}
+.mbtai-key_schedchange:before {
+  content: url("mbtaicons/ic_key_schedchange.png");
+}
+.mbtai-key_shuttlebus:before {
+  content: url("mbtaicons/ic_key_shuttlebus.png");
+}
+.mbtai-key_snowroute:before {
+  content: url("mbtaicons/ic_key_snowroute.png");
+}
+.mbtai-red_accessibility:before {
+  content: url("mbtaicons/ic_red_accessibility.png");
+}
+.mbtai-red_canceltrip:before {
+  content: url("mbtaicons/ic_red_canceltrip.png");
+}
+.mbtai-red_closure:before {
+  content: url("mbtaicons/ic_red_closure.png");
+}
+.mbtai-red_delay:before {
+  content: url("mbtaicons/ic_red_cdelay.png");
+}
+.mbtai-red_detour:before {
+  content: url("mbtaicons/ic_red_detour.png");
+}
+.mbtai-red_extraservice:before {
+  content: url("mbtaicons/ic_red_extraservice.png");
+}
+.mbtai-red_noservice:before {
+  content: url("mbtaicons/ic_red_noservice.png");
+}
+.mbtai-red_other:before {
+  content: url("mbtaicons/ic_red_other.png");
+}
+.mbtai-red_schedchange:before {
+  content: url("mbtaicons/ic_red_schedchange.png");
+}
+.mbtai-red_shuttlebus:before {
+  content: url("mbtaicons/ic_red_shuttlebus.png");
+}
+.mbtai-red_snowroute:before {
+  content: url("mbtaicons/ic_red_snowroute.png");
+}
+

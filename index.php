@@ -3,6 +3,7 @@
 	<title>Magic Mirror</title>
 	<style type="text/css">
 		<?php include('css/main.css') ?>
+		<?php include('css//mbta-icons.css') ?>
 	</style>
 	<link rel="stylesheet" type="text/css" href="css/weather-icons.css">
 	<script type="text/javascript">
@@ -17,6 +18,7 @@
 		<div class="date small dimmed"></div>
 		<div class="time"></div>
 		<div class="calendar xxsmall"></div>
+		<div class="mbta xxxsmall dimmed"></div>
 	</div>
 
 	<div class="top right">

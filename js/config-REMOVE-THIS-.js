@@ -8,6 +8,10 @@ var darkSkyAPIKey = "Insert your APi key from http://developer.forecast.io here"
 var darkSkyLat    = "41.000";
 var darkSkyLon    = "-71.000"
 
+// Set up your MBTA API key, available here: http://realtime.mbta.com/Portal/
+var mbtaAPIKey    = "Insert your API key from http://realtime.mbta.com/Portal/ here"
+var mbtaRoute     = "Insert your MBTA route string here"
+
 var feed = 'http://www.wbur.org/feed'
 
 // compliments:

@@ -21,7 +21,6 @@ jQuery.fn.outerHTML = function(s) {
 
 function roundVal(temp)
 {
-//	return Math.round(temp * 10) / 10;
 	return Math.round( temp );
 }
 
@@ -46,6 +45,9 @@ jQuery(document).ready(function($) {
 
 	var lastCompliment;
 	var compliment;
+
+	var mbtaAlerts        = [];		// List of alerts as HTML, one for each alert we have a JSON request for
+	var mbtaAlertsPending = 0;		// Number of JSON requests for alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
 
     moment.lang(lang);
 
@@ -248,9 +250,9 @@ jQuery(document).ready(function($) {
 	(function updateWeatherForecast()
 	{
 		var iconTable = {
-			'clear-day':'wi-day-sunny',
+			'clear-day'            :'wi-day-sunny',
 			'cloudy'               :'wi-day-cloudy',
-			'partly-cloudy-day'     :'wi-day-cloudy',
+			'partly-cloudy-day'    :'wi-day-cloudy',
 			'wind'                 :'wi-windy',
 			'rain'                 :'wi-rain',
 			'thunderstorm'         :'wi-thunderstorm',
@@ -314,14 +316,178 @@ jQuery(document).ready(function($) {
 			// Update the summary text
 			$('.summary').updateWithText(json.hourly.summary + ' ' + json.daily.summary + '<br><br>' +
 			                             '<span class="xxxsmall xxdimmed">last updated: ' + moment().format('h:mm ddd MMM D YYYY') + '</span>', 1000);
-		});
 
-		setTimeout(function() {
-			updateWeatherForecast();
-		}, 900000);		// Every 15 minutes
+			// Update in 15 minutes
+			setTimeout(updateWeatherForecast, 900000);
+
+		}).fail( function() {
+			// JSON call failed; re-arm the timer for 5 minutes
+			setTimeout(updateWeatherForecast, 300000);
+		});
 	})();
 
-	// RSS Feed Display
+
+	// MBTA Service Alerts.  We get 10000 calls a day, so we update every 5 minutes.
+	//  As with the weather, we again use the proxy to get the page.  MBTA does support
+	//  JSONP, but for whatever reason I just couldn't get that to work.
+
+	// See https://groups.google.com/forum/#!topic/massdotdevelopers/mco5gtgPEP4 for where this
+	//  list of effects came from.  The key is the effect_name, and the value is the class defined
+	//  in mbta-icons.css
+	var mbtaIconsKey = {
+		'Accessibility'     :'mbtai-key_accessibility',
+		'Amber Alert'       :'mbtai-key_other',
+		'Cancellation'      :'mbtai-key_canceltrip',
+		'Delay'             :'mbtai-key_delay',
+		'Detour'            :'mbtai-key_detour',
+		'Dock Closure'      :'mbtai-key_closure',
+		'Dock Issue'        :'mbtai-key_other',
+		'Extra Service'     :'mbtai-key_extraservice',
+		'Policy Change'     :'mbtai-key_other',
+		'Schedule Change'   :'mbtai-key_schedchange',
+		'Service Change'    :'mbtai-key_other',
+		'Shuttle'           :'mbtai-key_shuttlebus',
+		'Snow Route'        :'mbtai-key_snowroute',
+		'Station Closure'   :'mbtai-key_closure',
+		'Station Issue'     :'mbtai-key_other',
+		'Stop Closure'      :'mbtai-key_closure',
+		'Stop Move'         :'mbtai-key_other',
+		'Suspension'        :'mbtai-key_noservice',
+		'Track Change'      :'mbtai-key_other',
+	}
+
+	var mbtaIconsRed = {
+		'Accessibility'     :'mbtai-red_accessibility',
+		'Amber Alert'       :'mbtai-red_other',
+		'Cancellation'      :'mbtai-red_canceltrip',
+		'Delay'             :'mbtai-red_delay',
+		'Detour'            :'mbtai-red_detour',
+		'Dock Closure'      :'mbtai-red_closure',
+		'Dock Issue'        :'mbtai-red_other',
+		'Extra Service'     :'mbtai-red_extraservice',
+		'Policy Change'     :'mbtai-red_other',
+		'Schedule Change'   :'mbtai-red_schedchange',
+		'Service Change'    :'mbtai-red_other',
+		'Shuttle'           :'mbtai-red_shuttlebus',
+		'Snow Route'        :'mbtai-red_snowroute',
+		'Station Closure'   :'mbtai-red_closure',
+		'Station Issue'     :'mbtai-red_other',
+		'Stop Closure'      :'mbtai-red_closure',
+		'Stop Move'         :'mbtai-red_other',
+		'Suspension'        :'mbtai-red_noservice',
+		'Track Change'      :'mbtai-red_other',
+	}
+
+	// Once all the alerts have been updated, we refresh the div
+	function updateMBTAServiceAlerts_UpadteDiv()
+	{
+		var nonOngoingCount = 0;
+
+		// Count how many alerts we're actually showing
+		for( var i in mbtaAlerts ) {
+			if( mbtaAlerts[i] != "" )
+				nonOngoingCount++;
+		}
+
+		if( nonOngoingCount > 0 ) {
+			// We have at least oen alert to show
+			var alerts = '<p class="xxsmall" style="text-align:center">' + nonOngoingCount + ' MBTA service alerts</p>';
+			var	step   = 0;
+
+			for( var i in mbtaAlerts ) {
+				if( mbtaAlerts[i] == "" )			// These are ongoing alertst aht we're skipping
+					continue;
+
+				if( step > 0 )
+					alerts += '<br>';
+
+				alerts += mbtaAlerts[i];
+				step++;
+			}
+
+			$('.mbta').updateWithText(alerts, 1000);
+		}
+
+		// Update again in 5 minutes
+		setTimeout( updateMBTAServiceAlerts, 300000);
+	}
+
+	// Get the information for a single alert.  We wrap this in a function so that we can fake
+	//  passing variables (the array index, alert ID and default text) to our JSON callback.
+	function updateMBTAServiceAlerts_UpadteOne( index, alertID, defaultText )
+	{
+		var alerticon, alertTime, alertSeverity, alertText, isOngoing = false;
+
+		var alertURL = 'proxy.php?url=http://realtime.mbta.com/developer/api/v2/ALERTBYID%3Fapi_key=' + mbtaAPIKey + '%26id=' + alertID + '%26format=json';
+		$.getJSON(alertURL, function(jsonAlert, textStatus) {
+			// Success; use the information provided, but skip ongoing alerts
+			if( (jsonAlert.alert_lifecycle == "Ongoing") || (jsonAlert.alert_lifecycle == "Ongoing-Upcoming") ) {
+				isOngoing = true;
+			} else {
+				alertIcon     = jsonAlert.severity == "Minor" ? mbtaIconsKey[ jsonAlert.effect_name ] : mbtaIconsRed[ jsonAlert.effect_name ];
+				alertTime     = moment.unix( jsonAlert.effect_periods[0].effect_start ).format( "MMM D" );
+				alertSeverity = jsonAlert.severity;
+				alertText     = jsonAlert.header_text;
+			}
+
+		}).fail (function( jqxhr, textStatus, error ) {
+			// Give up and use the header text and default icon
+			alertIcon     = 'mbtai-key_other';
+			alertText     = defaultText;
+			alertTime     = '';
+			alertSeverity = '';
+
+		}).always (function() {
+			// Either way, we're done; build our HTML
+			if( isOngoing ) {
+				alert = "";
+			} else {
+				var alert = '<div class="mbtaEntry ' + alertIcon + '">'
+				alert    += '<strong>' + alertTime + ' &mdash; ' + alertSeverity + '</strong><br>';
+				alert    += alertText;
+				alert    += '</div>'
+
+				// Add it to the array
+				mbtaAlerts[ index ] = alert;
+			}
+
+			// If no more alerts are pending, update the div
+			if( --mbtaAlertsPending == 0 )
+				updateMBTAServiceAlerts_UpadteDiv();
+		});
+	}
+
+	// Outer function that updaets the alert list, calling the above functions to get information
+	//  about individual alerts
+	function updateMBTAServiceAlerts() {
+		var url = 'proxy.php?url=http://realtime.mbta.com/developer/api/v2/ALERTHEADERSBYROUTE%3Fapi_key=' + mbtaAPIKey + '%26route=' + mbtaRoute + '%26format=json';
+		$.getJSON(url, function(json, textStatus) {
+			// Reset our global array of alerts
+			mbtaAlerts.length = 0;
+			mbtaAlerts.length = json.alert_headers.length;
+			mbtaAlertsPending = mbtaAlerts.length;
+
+			// Loop through the alert lsit and request each alert's information
+			for (var i in json.alert_headers) {
+				// Get information about this specific alert
+				updateMBTAServiceAlerts_UpadteOne( i, json.alert_headers[i].alert_id, json.alert_headers[i].header_text );
+			}
+
+			// We don't restart the timer here; that is done after the last alert is udpated from updateMBTAServiceAlerts_UpadteDiv() via updateMBTAServiceAlerts_UpadteOne()
+
+		}).fail (function( jqxhr, textStatus, error ) {
+			// JSON call failed; re-arm the timer for 2 minutes
+			setTimeout( updateMBTAServiceAlerts, 120000);
+		});
+	};
+	
+	// Call the fucntion.  We can't call it at the end of the declaration itself like we do elsewhere
+	//  because then it's not in the right scope for for the other updateMBTAServiceAlerts_UpadteDiv()
+	//  to pass it to setTimeout().
+	updateMBTAServiceAlerts();
+
+
+	// RSS Feed Display.  Updates every 5 minutes.
 	(function fetchNews() {
 		$.feedToJson({
 			feed: feed,
@@ -331,11 +497,14 @@ jQuery(document).ready(function($) {
 					var item = data.item[i];
 					news.push(item.title);
 				}
+				// Update in 5 minutes
+				setTimeout( fetchNews, 300000 );
+			},
+			fail: function() {
+				// JSONP call failed; re-arm the timer for 2 minutes
+				setTimeout( fetchNews, 120000 );
 			}
 		});
-		setTimeout(function() {
-			fetchNews();
-		}, 60000);
 	})();
 
 	(function showNews() {
@@ -345,10 +514,10 @@ jQuery(document).ready(function($) {
 		$('.news').updateWithText(newsItem,2000);
 
 		newsIndex--;
-		if (newsIndex < 0) newsIndex = news.length - 1;
-		setTimeout(function() {
-			showNews();
-		}, 5500 + (newsLength * 20));			// Length of the headline modifies how logn it stays on screen
+		if (newsIndex < 0)
+			newsIndex = news.length - 1;
+
+		setTimeout( showNews, 5500 + (newsLength * 20));			// Length of the headline modifies how long it stays on screen
 	})();
 
 });
