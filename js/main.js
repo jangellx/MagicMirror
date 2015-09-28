@@ -382,6 +382,7 @@ jQuery(document).ready(function($) {
 	function updateMBTAServiceAlerts_UpadteDiv()
 	{
 		var nonOngoingCount = 0;
+		var alerts          = '';					// Ensures that the div is cleared if there are no actual events
 
 		// Count how many alerts we're actually showing
 		for( var i in mbtaAlerts ) {
@@ -390,12 +391,13 @@ jQuery(document).ready(function($) {
 		}
 
 		if( nonOngoingCount > 0 ) {
-			// We have at least oen alert to show
-			var alerts = '<p class="xxsmall" style="text-align:center">' + nonOngoingCount + ' MBTA service alerts</p>';
-			var	step   = 0;
+			// We have at least one alert to show
+			var	step = 0;
+
+			alerts = '<p class="xxsmall" style="text-align:center">' + nonOngoingCount + ' MBTA service alerts</p>';
 
 			for( var i in mbtaAlerts ) {
-				if( mbtaAlerts[i] == "" )			// These are ongoing alertst aht we're skipping
+				if( mbtaAlerts[i] == "" )			// These are Ongoing or Ongoing-Upcoming alerts that we're skipping
 					continue;
 
 				if( step > 0 )
@@ -404,11 +406,12 @@ jQuery(document).ready(function($) {
 				alerts += mbtaAlerts[i];
 				step++;
 			}
-
-			$('.mbta').updateWithText(alerts, 1000);
 		}
 
-		// Update again in 5 minutes
+		// Update the div itself
+		$('.mbta').updateWithText(alerts, 1000);
+
+		// Rearm the timer for 5 minutes
 		setTimeout( updateMBTAServiceAlerts, 300000);
 	}
 
@@ -467,13 +470,19 @@ jQuery(document).ready(function($) {
 			mbtaAlerts.length = json.alert_headers.length;
 			mbtaAlertsPending = mbtaAlerts.length;
 
-			// Loop through the alert lsit and request each alert's information
-			for (var i in json.alert_headers) {
-				// Get information about this specific alert
-				updateMBTAServiceAlerts_UpadteOne( i, json.alert_headers[i].alert_id, json.alert_headers[i].header_text );
-			}
+			if( mbtaAlerts.length == 0 ) {
+				// No alerts; just clear the block and restart the timer
+				$('.mbta').updateWithText('', 1000);
+				setTimeout( updateMBTAServiceAlerts, 300000);		// 5 minutes
 
-			// We don't restart the timer here; that is done after the last alert is udpated from updateMBTAServiceAlerts_UpadteDiv() via updateMBTAServiceAlerts_UpadteOne()
+			} else {
+				// Loop through the alert list and request each alert's information as separate AJAX calls
+				for (var i in json.alert_headers)
+					updateMBTAServiceAlerts_UpadteOne( i, json.alert_headers[i].alert_id, json.alert_headers[i].header_text );
+
+				// When we have alerts pending, we don't restart the timer here; that is done after the last alert
+				//  is udpated from updateMBTAServiceAlerts_UpadteDiv() via updateMBTAServiceAlerts_UpadteOne()
+			}
 
 		}).fail (function( jqxhr, textStatus, error ) {
 			// JSON call failed; re-arm the timer for 2 minutes
@@ -481,7 +490,7 @@ jQuery(document).ready(function($) {
 		});
 	};
 	
-	// Call the fucntion.  We can't call it at the end of the declaration itself like we do elsewhere
+	// Call the function.  We can't call it at the end of the declaration itself like we do elsewhere
 	//  because then it's not in the right scope for for the other updateMBTAServiceAlerts_UpadteDiv()
 	//  to pass it to setTimeout().
 	updateMBTAServiceAlerts();
