@@ -314,8 +314,10 @@ jQuery(document).ready(function($) {
 			$('.forecast').updateWithText(forecastTable, 1000);
 
 			// Update the summary text
-			$('.summary').updateWithText(json.hourly.summary + ' ' + json.daily.summary + '<br><br>' +
-			                             '<span class="xxxsmall xxdimmed">last updated: ' + moment().format('h:mm ddd MMM D YYYY') + '</span>', 1000);
+			$('.summary').updateWithText(json.hourly.summary + ' ' + json.daily.summary /*+ '<br><br>' +
+			                             '<span class="xxxsmall xxdimmed">last updated: ' + moment().format('h:mm ddd MMM D YYYY') + '</span>'*/, 1000);
+
+			$('.luWeather').updateWithText('weather: ' + moment().format('h:mm ddd MMM D YYYY'), 1000);
 
 			// Update in 15 minutes
 			setTimeout(updateWeatherForecast, 900000);
@@ -410,6 +412,7 @@ jQuery(document).ready(function($) {
 
 		// Update the div itself
 		$('.mbta').updateWithText(alerts, 1000);
+		$('.luMBTA').updateWithText('mbta: ' + moment().format('h:mm ddd MMM D YYYY'), 1000);
 
 		// Rearm the timer for 5 minutes
 		setTimeout( updateMBTAServiceAlerts, 300000);
@@ -501,13 +504,15 @@ jQuery(document).ready(function($) {
 		$.feedToJson({
 			feed: feed,
 			success: function(data){
-				news = [];
+				news.length = 0;
 				for (var i in data.item) {
 					var item = data.item[i];
 					news.push(item.title);
 				}
 				// Update in 5 minutes
 				setTimeout( fetchNews, 300000 );
+
+				$('.luRSS').updateWithText('rss: ' + moment().format('h:mm ddd MMM D YYYY'), 1000);
 			},
 			fail: function() {
 				// JSONP call failed; re-arm the timer for 2 minutes

@@ -22,6 +22,13 @@ body, html {
 	top: 50px;
 }
 
+.farbottom
+{
+	position: absolute;
+	bottom: 0px;
+}
+
+
 .left
 {
 	position: absolute;
@@ -194,6 +201,16 @@ body, html {
 	width: 200px;
 	text-align: center;
 	float: right;
+}
+
+.vspace {
+	width: 200px;
+	content:"test"
+}
+
+.lastupdated {
+	width: 200px;
+	text-align: right;
 }
 
 .forecast-table {
