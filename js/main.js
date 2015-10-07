@@ -504,19 +504,23 @@ jQuery(document).ready(function($) {
 		$.feedToJson({
 			feed: feed,
 			success: function(data){
-				news.length = 0;
-				for (var i in data.item) {
-					var item = data.item[i];
-					news.push(item.title);
-				}
-				// Update in 5 minutes
-				setTimeout( fetchNews, 300000 );
+				if( data == null ) {
+					// Error; re-arm the timer for 2 minutes
+					setTimeout( fetchNews, 120000 );
 
-				$('.luRSS').updateWithText('rss (' + news.length + ' articles): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
-			},
-			fail: function() {
-				// JSONP call failed; re-arm the timer for 2 minutes
-				setTimeout( fetchNews, 120000 );
+				} else {
+					// Success; get the list of articles
+					news.length = 0;
+
+					for (var i in data.item) {
+						var item = data.item[i];
+						news.push(item.title);
+					}
+					// Update in 5 minutes
+					setTimeout( fetchNews, 300000 );
+
+					$('.luRSS').updateWithText('rss (' + news.length + ' articles): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
+				}
 			}
 		});
 	})();
