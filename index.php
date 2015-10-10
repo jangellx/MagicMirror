@@ -49,7 +49,6 @@
 </div>
 
 <script src="js/jquery.js"></script>
-<script src="js/jquery.feedToJSON.js"></script>
 <script src="js/ical_parser.js"></script>
 <script src="js/moment-with-langs.min.js"></script>
 <script src="js/config.js"></script>
