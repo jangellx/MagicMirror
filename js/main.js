@@ -501,27 +501,34 @@ jQuery(document).ready(function($) {
 
 	// RSS Feed Display.  Updates every 5 minutes.
 	(function fetchNews() {
-		$.feedToJson({
-			feed: feed,
-			success: function(data){
-				if( data == null ) {
-					// Error; re-arm the timer for 2 minutes
-					setTimeout( fetchNews, 120000 );
+		// Yahoow Query Language implementation borrowed from jquery.feedToJSON.js by dboz@airshp.com
+		var yqlURL      = 'http://query.yahooapis.com/v1/public/yql';                            // yql itself
+		var yqlQS       = '?format=json&callback=?&q=select%20*%20from%20rss%20where%20url%3D';  // yql query string
+		var cachebuster = new Date().getTime();   							                     // yql caches feeds, so we change the feed url each time
 
-				} else {
-					// Success; get the list of articles
-					news.length = 0;
+		var url = yqlURL + yqlQS + "'" + encodeURIComponent(feed) + "'" + "&_nocache=" + cachebuster;
+		$.getJSON( url, function(jsonRSS, textStatus) {
+			// Success; cache the feed titles
+			if( jsonRSS.query.results == null ) {
+				// Error; re-arm the timer for 2 minutes
+				setTimeout( fetchNews, 120000 );
 
-					for (var i in data.item) {
-						var item = data.item[i];
-						news.push(item.title);
-					}
-					// Update in 5 minutes
-					setTimeout( fetchNews, 300000 );
+			} else {
+				// Success; get the list of articles
+				news.length = 0;
 
-					$('.luRSS').updateWithText('rss (' + news.length + ' articles): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
-				}
+				for (var i in jsonRSS.query.results.item)
+					news.push( jsonRSS.query.results.item[i].title );
+
+				$('.luRSS').updateWithText('rss (' + news.length + ' articles): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
+
+				// Update in 5 minutes
+				setTimeout( fetchNews, 300000 );
 			}
+			
+		}).fail (function( jqxhr, textStatus, error ) {
+			// Error; re-arm the timer for 2 minutes
+			setTimeout( fetchNews, 120000 );
 		});
 	})();
 
