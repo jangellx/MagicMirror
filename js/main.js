@@ -422,18 +422,43 @@ jQuery(document).ready(function($) {
 	//  passing variables (the array index, alert ID and default text) to our JSON callback.
 	function updateMBTAServiceAlerts_UpadteOne( index, alertID, defaultText )
 	{
-		var alerticon, alertTime, alertSeverity, alertText, isOngoing = false;
+		var alerticon, alertTime, alertSeverity, alertText, alertDir, isOngoing = false;
 
 		var alertURL = 'proxy.php?url=http://realtime.mbta.com/developer/api/v2/ALERTBYID%3Fapi_key=' + mbtaAPIKey + '%26id=' + alertID + '%26format=json';
 		$.getJSON(alertURL, function(jsonAlert, textStatus) {
 			// Success; use the information provided, but skip ongoing alerts
+
 			if( (jsonAlert.alert_lifecycle == "Ongoing") || (jsonAlert.alert_lifecycle == "Ongoing-Upcoming") ) {
+				// Ongoing alert; just mark it so we know to skip it
 				isOngoing = true;
+
 			} else {
+				// All other alerts; get information for display
 				alertIcon     = jsonAlert.severity == "Minor" ? mbtaIconsKey[ jsonAlert.effect_name ] : mbtaIconsRed[ jsonAlert.effect_name ];
 				alertTime     = moment.unix( jsonAlert.effect_periods[0].effect_start ).format( "MMM D" );
 				alertSeverity = jsonAlert.severity;
 				alertText     = jsonAlert.header_text;
+
+				// Build a list of directions that the alert affects (should be "inbound" and "outbound" for the commuter rail, for example)
+				var dirs = [];
+				for (var i in jsonAlert.affected_services.services) {
+					var service = jsonAlert.affected_services.services[i];
+					if( typeof(service.direction_name) != 'undefined' ) {
+						if( !(service.direction_name in dirs) )
+							dirs.push( service.direction_name );
+					}
+				}
+
+				// Compose the alertDir string
+				alertDir = "";
+				for (var i in dirs) {
+					if( i == 0)
+						alertDir += ' &mdash; ';
+					else
+						alertDir += '/';
+
+					alertDir += dirs[i];
+				}
 			}
 
 		}).fail (function( jqxhr, textStatus, error ) {
@@ -442,6 +467,7 @@ jQuery(document).ready(function($) {
 			alertText     = defaultText;
 			alertTime     = '';
 			alertSeverity = '';
+			alertDir      = "";
 
 		}).always (function() {
 			// Either way, we're done; build our HTML
@@ -449,7 +475,7 @@ jQuery(document).ready(function($) {
 				alert = "";
 			} else {
 				var alert = '<div class="mbtaEntry ' + alertIcon + '">'
-				alert    += '<strong>' + alertTime + ' &mdash; ' + alertSeverity + '</strong><br>';
+				alert    += '<strong>' + alertTime + ' &mdash; ' + alertSeverity + alertDir + '</strong><br>';
 				alert    += alertText;
 				alert    += '</div>'
 
