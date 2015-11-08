@@ -32,12 +32,12 @@ body, html {
 .left
 {
 	position: absolute;
-	left: 0px;
+	left: 15px;
 }
 .right
 {
 	position: absolute;
-	right: 0px;
+	right: 15px;
 	text-align: right;
 }
 
