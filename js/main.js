@@ -46,8 +46,10 @@ jQuery(document).ready(function($) {
 	var lastCompliment;
 	var compliment;
 
-	var mbtaAlerts        = [];		// List of alerts as HTML, one for each alert we have a JSON request for
-	var mbtaAlertsPending = 0;		// Number of JSON requests for alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
+	var mbtaAlerts          = [];				// List of alerts as HTML, one for each alert we have a JSON request for
+	var mbtaAlertsPending   = 0;				// Number of JSON requests for alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
+
+	var holidayWasInit      = [false, false]	// Used to detect if this is the first call to update a holiday or not
 
     moment.lang(lang);
 
@@ -215,6 +217,60 @@ jQuery(document).ready(function($) {
         	updateCalendar();
         }, 1000);
 	})();
+
+	// Holiday data comes from holidayapi.com.  We report the next holiday coming up after today,
+	//  and if today is a holiday.
+	function updateHolidays( whichHoliday )
+	{
+		var asUpcoming = (whichHoliday == 'holidaytoday') ? 0 : 1;
+
+		// The timer updates every hour, but we only need to refresh once a day.  We check to see
+		//  if the last time we updated on a different day; if not, we just rearm the timer.
+		if( holidayWasInit[ asUpcoming ] && (moment().day == moment().subtract( 1, 'hour' )) ) {
+        	setTimeout(function() {
+        		updateHolidays();
+        	}, 3600000);
+
+			return;
+		}
+
+		holidayWasInit[ asUpcoming ] = true;
+
+		var now = moment();
+		var holidayURL = 'http://holidayapi.com/v1/holidays?country=' + holidayCountry + '&year=' + now.format('YYYY') + '&month=' + now.format('M') + '&day=' + now.format('D');
+		if( asUpcoming )
+			holidayURL += "&upcoming";
+
+		$.getJSON(holidayURL, function(jsonDate, textStatus) {
+			// Success; update the holiday string, even if it's just empty
+			var holidayText = "";
+			if( (jsonDate.status == 200) && (jsonDate.holidays.length > 0) ) {
+				if( asUpcoming ) {
+					var futureDate = moment( jsonDate.holidays[0].date, 'YYYY-MM-DD' );
+					holidayText = '&bull; ' + futureDate.format( "dddd, MMMM Do" ) + ' is ' + jsonDate.holidays[0].name;
+				} else {
+					holidayText = '&bull; Today is ' + jsonDate.holidays[0].name + '!';
+				}
+			}
+
+			$('.' + whichHoliday ).updateWithText( holidayText, 1000 );
+
+			// Restart the timer in an hour
+			setTimeout(function() {
+				updateHolidays();
+			}, 3600000);
+
+		}).fail (function( jqxhr, textStatus, error ) {
+			// Failed; restart the timer for two minutes
+			setTimeout(function() {
+				updateHolidays( whichHoliday );
+			}, 120000);
+
+		});
+	};
+
+	updateHolidays( 'holidaytoday' );
+	updateHolidays( 'holidaynext'  );
 
 	(function updateCompliment()
 	{
