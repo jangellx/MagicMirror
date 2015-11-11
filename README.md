@@ -1,5 +1,5 @@
 # MagicMirror
-My variant of Michael Teeuw's Magic Mirror project website files.
+My variant of Michael Teeuw's Magic Mirror project website files.  The code here is based off of his source, which is [also on GitHub](https://github.com/MichMich/MagicMirror)
 
 If you're not familiar with the Magic Mirror project, Michael did a brilliant job building and documenting
 it on [his site](http://michaelteeuw.nl/tagged/magicmirror).  Even better, he provided detailed instructions
