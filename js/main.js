@@ -224,14 +224,19 @@ jQuery(document).ready(function($) {
 	{
 		var asUpcoming = (whichHoliday == 'holidaytoday') ? 0 : 1;
 
-		// The timer updates every hour, but we only need to refresh once a day.  We check to see
-		//  if the last time we updated on a different day; if not, we just rearm the timer.
-		if( holidayWasInit[ asUpcoming ] && (moment().day == moment().subtract( 1, 'hour' )) ) {
-        	setTimeout(function() {
-        		updateHolidays();
-        	}, 3600000);
+		// The timer updates a bit less than once an hour, but we only need to refresh once a day.  We
+		//  check to see if the last time we updated on a different day; if not, we just rearm the timer.
+		if( holidayWasInit[ asUpcoming ] ) {
+			var today = moment().day();
+			var todayMinusOneHour = moment().subtract( 1, 'hour' ).day();
 
-			return;
+			if( today == todayMinusOneHour ) {
+				setTimeout(function() {
+					updateHolidays();
+				}, 3500000);
+
+				return;
+			}
 		}
 
 		holidayWasInit[ asUpcoming ] = true;
@@ -257,8 +262,8 @@ jQuery(document).ready(function($) {
 
 			// Restart the timer in an hour
 			setTimeout(function() {
-				updateHolidays();
-			}, 3600000);
+				updateHolidays( whichHoliday );
+			}, 3500000);
 
 		}).fail (function( jqxhr, textStatus, error ) {
 			// Failed; restart the timer for two minutes
