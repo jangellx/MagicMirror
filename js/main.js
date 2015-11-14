@@ -505,7 +505,7 @@ jQuery(document).ready(function($) {
 				for (var i in jsonAlert.affected_services.services) {
 					var service = jsonAlert.affected_services.services[i];
 					if( typeof(service.direction_name) != 'undefined' ) {
-						if( !(service.direction_name in dirs) )
+						if( $.inArray(service.direction_name, dirs) == -1 )
 							dirs.push( service.direction_name );
 					}
 				}
