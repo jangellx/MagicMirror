@@ -49,7 +49,7 @@ jQuery(document).ready(function($) {
 	var mbtaAlerts          = [];				// List of alerts as HTML, one for each alert we have a JSON request for
 	var mbtaAlertsPending   = 0;				// Number of JSON requests for alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
 
-	var holidayWasInit      = [false, false]	// Used to detect if this is the first call to update a holiday or not
+	var holidayThisDay      = [-1, -1]		// Used to decide if this is the same day as the last time we checked.  -1 means we havne't checked yet.
 
     moment.lang(lang);
 
@@ -224,22 +224,17 @@ jQuery(document).ready(function($) {
 	{
 		var asUpcoming = (whichHoliday == 'holidaytoday') ? 0 : 1;
 
-		// The timer updates a bit less than once an hour, but we only need to refresh once a day.  We
-		//  check to see if the last time we updated on a different day; if not, we just rearm the timer.
-		if( holidayWasInit[ asUpcoming ] ) {
-			var today = moment().day();
-			var todayMinusOneHour = moment().subtract( 1, 'hour' ).day();
+		// The timer updates a once an hour, but we only need to refresh once a day.  We check to
+		//  see if the last time we updated on a different day; if not, we just rearm the timer.
+		if( holidayThisDay[ asUpcoming ] == moment().day() ) {
+			setTimeout(function() {
+				updateHolidays();
+			}, 3500000);
 
-			if( today == todayMinusOneHour ) {
-				setTimeout(function() {
-					updateHolidays();
-				}, 3500000);
-
-				return;
-			}
+			return;
 		}
 
-		holidayWasInit[ asUpcoming ] = true;
+		holidayThisDay[ asUpcoming ] = moment().day();
 
 		var now = moment();
 		var holidayURL = 'http://holidayapi.com/v1/holidays?country=' + holidayCountry + '&year=' + now.format('YYYY') + '&month=' + now.format('M') + '&day=' + now.format('D');
