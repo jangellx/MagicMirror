@@ -49,7 +49,9 @@ jQuery(document).ready(function($) {
 	var mbtaAlerts          = [];				// List of alerts as HTML, one for each alert we have a JSON request for
 	var mbtaAlertsPending   = 0;				// Number of JSON requests for alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
 
-	var holidayThisDay      = [-1, -1]		// Used to decide if this is the same day as the last time we checked.  -1 means we havne't checked yet.
+	var holidayThisDay      = [-1, -1]			// Used to decide if this is the same day as the last time we checked.  -1 means we havne't checked yet.
+
+	var tempGraphSVG;							// SVG used to draw the temp/rain graph into
 
     moment.lang(lang);
 
@@ -301,8 +303,9 @@ jQuery(document).ready(function($) {
 
 	// Get the weather via Dark Sky's API.  We get 1000 free updates a day,
 	//  so we only check once every 15 minutes.  That should be more than
-	//  frequent enough.  This updates the current conditions, forecast and
-	//  summary in the same places so that we can use just one JSON call.
+	//  frequent enough.  This updates the current conditions, forecast,
+	//  summary and graph in the same place so that we can use just one
+	//  JSON call.
 	(function updateWeatherForecast()
 	{
 		var iconTable = {
@@ -375,6 +378,9 @@ jQuery(document).ready(function($) {
 
 			$('.luWeather').updateWithText('weather: ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
+			// Generate the graph
+			updateWeatherForecast_DrawGraph( json.hourly.data );
+
 			// Update in 15 minutes
 			setTimeout(updateWeatherForecast, 900000);
 
@@ -384,6 +390,195 @@ jQuery(document).ready(function($) {
 		});
 	})();
 
+	// Draw the weather graph.  This is simialr to the graph drawn in the Weather Underground iOS app,
+	//  with the next 24 hours temperature curve overlaid over the chance of rain.  We take advantage
+	//  of Dark Sky's confidence to draw a wider or thinner rain line.
+	function updateWeatherForecast_DrawGraph( hourlyData ) {
+		// Create the SVG, if needed.  We just reuse the SVG instead of creating a new one each time,
+		//  and animate the values within it
+		var marginL  = 20;
+		var marginR  =  5;
+		var marginT  = 15;
+		var marginB  =  5;
+		var w = parseInt( $('.tempgraph').css('width') );
+		var h = parseInt( $('.tempgraph').css('height') );
+
+		tempGraphSVG = d3.select( "#tempGraphSVG" );
+		if( tempGraphSVG.empty() ) {
+			// Set up the SVG
+			tempGraphSVG = d3.select(".tempgraph").append("svg")
+							 .attr('width', w)
+							 .attr('height', h)
+							 .attr('id', "tempGraphSVG" );
+
+			// Draw a at the top of the graph so that we know where 100% chance of rain is
+			tempGraphSVG.append( "line").attr("x1", marginL ).attr("y1", 0 )
+										.attr("x2", w       ).attr("y2", 0 )
+										.attr("class", "tempGraphTopEdgeLine");
+		}
+
+		// Filter the data down to just 24 hours
+		var filteredHourlyData = hourlyData.filter( function(d, i) { return (i < 23); });
+
+		// Draw each graph into the SVG
+		var timeXScale = d3.time.scale().domain([ d3.min( filteredHourlyData, function(d) { return d.time } ),
+												  d3.max( filteredHourlyData, function(d) { return d.time } ) ])
+										.range([ marginL, w - marginR ]);
+
+		updateWeatherForecast_DrawGraph_Rain( filteredHourlyData );
+		updateWeatherForecast_DrawGraph_Temp( filteredHourlyData );
+		updateWeatherForecast_DrawGraph_HourMarkers( filteredHourlyData );
+
+		// - Graph Drawing Functions - 
+		function updateWeatherForecast_DrawGraph_Rain( hourlyData ) {
+			// Draw a filled line graph for the rain as a propability from 0 to 100% over time
+			//  Note that hourly data includes 48 hous worth, so we can it at 24.
+		
+			var rainYScale = d3.time.scale().domain([ 0.0, 1.0 ])
+											.range([ h-marginT-marginB, marginT ]);
+
+			// Draw a filled area under the line
+			var rainAreaValue = d3.svg.area()
+								  .x(  function(d){ return timeXScale( d.time ); })
+								  .y0( h )
+								  .y1( function(d){ return rainYScale( d.precipProbability ); });
+
+			// - Create the path, if needed
+			if( tempGraphSVG.select( ".tempgraphRainArea" ).empty() ) {
+				tempGraphSVG.append( "path" )
+							.attr( "class", "tempgraphRainArea" );
+			}
+			
+			// - Update the elements in the path
+			var s = tempGraphSVG.select( ".tempgraphRainArea" )
+						s.datum( hourlyData )
+						s.attr( "d", rainAreaValue );
+
+			// Draw a line between the data points
+			var rainLineValue = d3.svg.line()
+								  .x( function(d){ return timeXScale( d.time ); })
+								  .y( function(d){ return rainYScale( d.precipProbability ); });
+
+			// - Create the path, if needed
+			if( tempGraphSVG.select( ".tempgraphRainPath" ).empty() ) {
+				tempGraphSVG.append( "path" )
+							.attr( "class", "tempgraphRainPath" );
+			}
+
+			// - Update the elements in the path
+			tempGraphSVG.select( ".tempgraphRainPath" )
+						.attr( "d", rainLineValue( hourlyData ));
+		}
+
+		function updateWeatherForecast_DrawGraph_Temp( hourlyData ) {
+			// Create dots for the temp, scaling to limit the min/max temps to the bounds of the view
+			//  Note that hourly data includes 48 hous worth, not 24.  We only draw 12 dots to keep
+			//  things from getting too cluttered, but graph 24.
+			var tempYScale = d3.time.scale().domain([ d3.min( hourlyData, function(d) { return d.temperature } ),
+													  d3.max( hourlyData, function(d) { return d.temperature } ) ])
+											.range([ h-marginB, marginT ]);
+
+			// Draw a line between the dots
+			var tempLineValue = d3.svg.line()
+								  .x( function(d){ return timeXScale( d.time ); })
+								  .y( function(d){ return tempYScale( d.temperature ); });
+
+			// - Create the path, if needed
+			if( tempGraphSVG.select( ".tempgraphTempPath" ).empty() ) {
+				tempGraphSVG.append( "path" )
+							.attr( "class", "tempgraphTempPath" );
+			}
+
+			// - Update the elements in the path
+			tempGraphSVG.select( ".tempgraphTempPath" )
+						.attr( "d", tempLineValue( hourlyData ));
+
+			// Draw the dots
+			// - Add new dots
+			tempGraphSVG.selectAll( ".tempgraphTempMark" )
+						.data( hourlyData.filter( function(d, i) {
+							return (i % 2) == 0;													// Every second element
+						}) )
+						.enter()
+						.append( "circle" )
+						.attr( "class", "tempgraphTempMark" )
+						.attr( "r", 3 );
+
+			// - Update all dots
+			tempGraphSVG.selectAll( ".tempgraphTempMark" )
+						.attr( "cx", function(d) {
+							return timeXScale( d.time );
+						})
+						.attr( "cy", function(d) {
+							return tempYScale( d.temperature );
+						});
+
+
+			// Draw text for the temperature
+			// - Add new text
+			tempGraphSVG.selectAll( ".tempgraphTempText" )
+						.data( hourlyData.filter( function(d, i) {
+							return (i % 4) == 0;													// Every 4th element
+						}) )
+						.enter()
+						.append( "text" )
+						.attr( "class", "tempgraphTempText" )
+
+						.attr("text-anchor", "middle")
+
+			// - Update all text
+			tempGraphSVG.selectAll( ".tempgraphTempText" )
+						.text( function(d) {
+							return Math.round( d.temperature ).toString() + "\u00B0";				// Unicode for &deg;
+						})
+						.attr( "x", function(d) {
+							return timeXScale( d.time ) + 2;
+						})
+						.attr( "y", function(d) {
+							return tempYScale( d.temperature ) - 5;
+						});
+
+			// Add/update the freezing point line
+			if( tempGraphSVG.select( ".tempGraphFreezeLine" ).empty() ) {
+				tempGraphSVG.append( "line").attr("class", "tempGraphFreezeLine");
+			}
+
+			var freezingPoint = tempYScale( 32 );
+			tempGraphSVG.select( ".tempGraphFreezeLine").attr("x1", marginL ).attr("y1", freezingPoint )
+													    .attr("x2", w       ).attr("y2", freezingPoint );
+
+			// Add/update the hot line
+			if( tempGraphSVG.select( ".tempGraphHotLine" ).empty() ) {
+				tempGraphSVG.append( "line").attr("class", "tempGraphHotLine");
+			}
+
+			var hotPoint = tempYScale( 80 );
+			tempGraphSVG.select( ".tempGraphHotLine").attr("x1", marginL ).attr("y1", hotPoint )
+													 .attr("x2", w       ).attr("y2", hotPoint );
+		}
+
+		function updateWeatherForecast_DrawGraph_HourMarkers( hourlyData ) {
+			// Draw markers at 6 AM, noon, 6 PM and midnight
+			if( tempGraphSVG.selectAll( ".tempGraphHourMarker" ).empty() ) {
+				for( i=0; i < 4; i++ )
+					tempGraphSVG.append( "line").attr("class", "tempGraphHourMarker");
+			}
+
+			var startMoment = moment.unix( hourlyData[0].time );
+			startMoment.add( 6 - (startMoment.hours() % 6), "hours" );
+
+			var startUnix = startMoment.unix();
+			tempGraphSVG.selectAll( ".tempGraphHourMarker")
+						.attr("x1", function(d,i) { 
+							return timeXScale( startUnix + (i * 6 * 60 * 60 ) )		// 6 hours
+						})
+						.attr("x2", function(d,i) { 
+							return timeXScale( startUnix + (i * 6 * 60 * 60 ) )		// 6 hours
+						})
+						.attr("y1", 0 )
+						.attr("y1", h );
+		}
+	}
 
 	// MBTA Service Alerts.  We get 10000 calls a day, so we update every 5 minutes.
 	//  As with the weather, we again use the proxy to get the page.  MBTA does support

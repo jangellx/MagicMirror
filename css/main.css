@@ -12,10 +12,8 @@ body, html {
 	font-size: 75px;
 	 -webkit-font-smoothing: antialiased;
 }
-.wi {
-	line-height: 75px;
-}
 
+/* -- Margins and Basic Structure -- */
 .top
 {
 	position: absolute;
@@ -73,9 +71,83 @@ body, html {
 	bottom: 50px;
 }
 
+/* -- Temperature and Rain Graph -- */
+.tempgraph
+{
+	width: 200px;
+	height: 80px;
+	float: right;
+}
+
+.tempgraphTempMark
+{
+	fill:         red;
+	stroke:       black;
+	stroke-width: 1;
+}
+
+.tempgraphTempPath
+{
+    fill:         none;
+	stroke:       red;
+	stroke-width: 1.5;
+}
+
+.tempgraphTempText
+{
+    font-family: HelveticaNeue-Light;
+    font-size: 10px;
+    fill: #fff;
+}
+
+.tempgraphRainPath
+{
+    fill:         none;
+	stroke:       #B0C4DE;		/* lightsteelblue */	
+	stroke-width: 1;
+}
+
+.tempGraphTopEdgeLine
+{
+    stroke:           #506078;	/* Darker version of lightsteelblue */
+	stroke-width:     2;
+	stroke-dasharray: 1,5;
+}
+
+.tempgraphRainArea
+{
+    fill:         #304056;		/* Even darker version of lightsteelblue */
+	stroke-width: 0;
+}
+
+.tempGraphFreezeLine
+{
+    stroke:           lightsteelblue;
+	stroke-width:     2;
+/*	stroke-dasharray: 1,1;*/
+	stroke-opacity:   25%;
+}
+
+.tempGrapHotLine
+{
+    stroke:           orange;
+	stroke-width:     2;
+/*	stroke-dasharray: 1,1;*/
+	stroke-opacity:   25%;
+}
+
+.tempGraphHourMarker
+{
+    stroke:           white;
+	stroke-width:     1;
+/*	stroke-dasharray: 1,1;*/
+	stroke-opacity:   5%;
+}
+
+/* -- Font Sizes -- */
 .xxxsmall
 {
-	font-size: 10px;
+	font-size: 8px;
 	letter-spacing: 0px;
 	font-family: "HelveticaNeue-Medium";
 }
@@ -121,6 +193,7 @@ body, html {
 	line-height: 35px;
 }
 
+/* -- Dimming -- */
 .xxdimmed
 {
 	color: #444;
@@ -139,6 +212,12 @@ body, html {
 .light
 {
 	font-family: "HelveticaNeue-UltraLight";
+}
+
+
+/* -- Weather Icons -- */
+.wi {
+	line-height: 75px;
 }
 
 .icon 
@@ -162,6 +241,7 @@ body, html {
 	font-weight: 100;
 }
 
+/* -- Time -- */
 .time {
 	font-size: 75px;
 	color: #FFF;
@@ -197,6 +277,7 @@ body, html {
 	color:FFA500
 }
 
+/* -- Weather Summary -- */
 .summary {
 	width: 200px;
 	text-align: center;
@@ -208,13 +289,9 @@ body, html {
 	content:"test"
 }
 
-.lastupdated {
-	width: 250px;
-	text-align: right;
-}
-
+/* -- Weather Forecast -- */
 .forecast-table {
-	float: right;
+/*	float: right;*/
 	text-align: right;
 	font-size: 20px;
 	line-height: 20px;
@@ -226,7 +303,7 @@ body, html {
 	text-align: right;
 }
 
-.forecast-table .temp-min, .forecast-table .temp-max  
+.forecast-table .-min, .forecast-table .temp-max  
 {
 	width: 45px;
 	text-align: right;
@@ -237,6 +314,7 @@ body, html {
 	color: #999;
 }
 
+/* -- Calendar -- */
 .calendar-table {
 	font-size: 14px;
 	line-height: 20px;
@@ -247,10 +325,18 @@ body, html {
 	text-align: right;
 }
 
+/* -- MBTA -- */
 .mbta {
 	width: 225px;
 }
 
+/* -- Last Updated -- */
+.lastupdated {
+	width: 250px;
+	text-align: right;
+}
+
+/* -- Dishwasher -- */
 .dishwasher {
 	background-color: white;
 	color: black;
@@ -261,6 +347,7 @@ body, html {
 	display: none;
 }
 
+/* -- Fonts -- */
 @font-face {
   font-family: 'HelveticaNeue-UltraLight';
   src: url('font/HelveticaNeue-UltraLight.eot'); /* IE9 Compat Modes */
@@ -271,8 +358,6 @@ body, html {
   font-style:   normal;
   font-weight:  100;
 }
-
-
 
 @font-face {
   font-family: 'HelveticaNeue-Medium';
