@@ -308,28 +308,13 @@ jQuery(document).ready(function($) {
 	//  JSON call.
 	(function updateWeatherForecast()
 	{
-		var iconTable = {
-			'clear-day'            :'wi-day-sunny',
-			'cloudy'               :'wi-day-cloudy',
-			'partly-cloudy-day'    :'wi-day-cloudy',
-			'wind'                 :'wi-windy',
-			'rain'                 :'wi-rain',
-			'thunderstorm'         :'wi-thunderstorm',
-			'snow'                 :'wi-snow',
-			'sleet'                :'wi-sleet',
-			'fog'                  :'wi-fog',
-			'clear-night'          :'wi-night-clear',
-			'partly-cloudy-night'  :'wi-night-cloudy',
-			'hail'                 :'wi-hail',
-		}
-
 		$.getJSON('proxy.php?url=https://api.forecast.io/forecast/' + darkSkyAPIKey + '/' + darkSkyLat + ',' + darkSkyLon, function(json, textStatus) {
 			// Update the current weather
 			var current    = json.currently;
 			var temp       = roundVal(current.temperature);
 			var wind       = roundVal(current.wind);
 
-			var iconClass  = iconTable[current.icon];
+			var iconClass  = "wi-forecast-io-" + current.icon;
 			var icon       = $('<span/>').addClass('icon').addClass('dimmed').addClass('wi').addClass(iconClass);
 			$('.temp').updateWithText( icon.outerHTML() + temp + '&deg;', 1000 );
 
@@ -354,7 +339,7 @@ jQuery(document).ready(function($) {
 
 			for (var i in json.daily.data) {
 				var day       = json.daily.data[i];
-			    var iconClass = iconTable[day.icon];
+			    var iconClass = "wi wi-forecast-io-" + day.icon;
 				var dt        = new Date( day.time * 1000 );
 
 				var row = $('<tr />').css('opacity', opacity);
