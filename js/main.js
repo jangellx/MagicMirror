@@ -316,7 +316,7 @@ jQuery(document).ready(function($) {
 			'rain'                 :'wi-rain',
 			'thunderstorm'         :'wi-thunderstorm',
 			'snow'                 :'wi-snow',
-			'sleet'                :'wi-snow',
+			'sleet'                :'wi-sleet',
 			'fog'                  :'wi-fog',
 			'clear-night'          :'wi-night-clear',
 			'partly-cloudy-night'  :'wi-night-cloudy',
