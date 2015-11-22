@@ -420,7 +420,7 @@ jQuery(document).ready(function($) {
 			//  Note that hourly data includes 48 hous worth, so we can it at 24.
 		
 			var rainYScale = d3.time.scale().domain([ 0.0, 1.0 ])
-											.range([ h-marginT-marginB, marginT ]);
+											.range([ h, 0 ]);
 
 			// Draw a filled area under the line
 			var rainAreaValue = d3.svg.area()
