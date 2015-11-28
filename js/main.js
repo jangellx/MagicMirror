@@ -344,7 +344,7 @@ jQuery(document).ready(function($) {
 
 				var row = $('<tr />').css('opacity', opacity);
 				row.append($('<td/>').addClass('day').html(moment.weekdaysShort(dt.getDay())));
-				row.append($('<td/>').addClass('icon-small').addClass(iconClass));
+				row.append($('<td/>').addClass('icon-small forecast-icon').addClass(iconClass));
 				row.append($('<td/>').addClass('temp-max').html(roundVal(day.temperatureMax) + '&deg;'));
 				row.append($('<td/>').addClass('temp-min').html(roundVal(day.temperatureMin) + '&deg;'));
 
@@ -396,7 +396,7 @@ jQuery(document).ready(function($) {
 							 .attr('height', h)
 							 .attr('id', "tempGraphSVG" );
 
-			// Draw a at the top of the graph so that we know where 100% chance of rain is
+			// Draw a line at the top of the graph so that we know where 100% chance of rain is
 			tempGraphSVG.append( "line").attr("x1", marginL ).attr("y1", 0 )
 										.attr("x2", w       ).attr("y2", 0 )
 										.attr("class", "tempGraphTopEdgeLine");
@@ -508,7 +508,6 @@ jQuery(document).ready(function($) {
 						.enter()
 						.append( "text" )
 						.attr( "class", "tempgraphTempText" )
-
 						.attr("text-anchor", "middle")
 
 			// - Update all text
@@ -523,45 +522,71 @@ jQuery(document).ready(function($) {
 							return tempYScale( d.temperature ) - 5;
 						});
 
-			// Add/update the freezing point line
-			if( tempGraphSVG.select( ".tempGraphFreezeLine" ).empty() ) {
-				tempGraphSVG.append( "line").attr("class", "tempGraphFreezeLine");
+			// Add the freezing and hot lines
+			updateWeatherForecast_DrawGraph_HotColdLine( 32, "freezeLine", "\uf076" )				// f076 is wi-snowflake-cold
+			updateWeatherForecast_DrawGraph_HotColdLine( 80, "hotLine",    "\uf072" )				// f076 is wi-hot
+
+			function updateWeatherForecast_DrawGraph_HotColdLine( temp, className, icon ) {			// Subfunction of updateWeatherForecast_DrawGraph_Temp() for access to tempYScale
+				// Draw a line across the graph and place an icon at a given temperature
+				var tempPoint = tempYScale( temp );
+
+				// Add/update the line
+				if( tempGraphSVG.select( ".tempGraphHotColdLine ." + className ).empty() ) {
+					tempGraphSVG.append( "line").attr("class", "tempGraphHotColdLine " + className );
+				}
+
+				tempGraphSVG.select( ".tempGraphHotColdLine." + className).attr("x1", marginL ).attr("y1", tempPoint )
+																		  .attr("x2", w       ).attr("y2", tempPoint );
+
+				// Add/update the icon
+				if( tempGraphSVG.select( ".tempGraphHotColdLine.lineIcon." + className ).empty() ) {
+					tempGraphSVG.append( "text").attr("class", "tempGraphHotColdLine lineIcon wi " + className )
+												.text( icon );
+				}
+
+				tempGraphSVG.select( ".tempGraphHotColdLine.lineIcon." + className ).attr("x", w - 20).attr("y", tempPoint + 5);
 			}
-
-			var freezingPoint = tempYScale( 32 );
-			tempGraphSVG.select( ".tempGraphFreezeLine").attr("x1", marginL ).attr("y1", freezingPoint )
-													    .attr("x2", w       ).attr("y2", freezingPoint );
-
-			// Add/update the hot line
-			if( tempGraphSVG.select( ".tempGraphHotLine" ).empty() ) {
-				tempGraphSVG.append( "line").attr("class", "tempGraphHotLine");
-			}
-
-			var hotPoint = tempYScale( 80 );
-			tempGraphSVG.select( ".tempGraphHotLine").attr("x1", marginL ).attr("y1", hotPoint )
-													 .attr("x2", w       ).attr("y2", hotPoint );
 		}
 
 		function updateWeatherForecast_DrawGraph_HourMarkers( hourlyData ) {
-			// Draw markers at 6 AM, noon, 6 PM and midnight
+			// Draw markers at 6 AM, noon, 6 PM and midnight.  We draw five, since the first
+			//  or last one may be off the end of the graph, and thus only four will be drawn.
 			if( tempGraphSVG.selectAll( ".tempGraphHourMarker" ).empty() ) {
-				for( i=0; i < 4; i++ )
-					tempGraphSVG.append( "line").attr("class", "tempGraphHourMarker");
+				for( i=0; i < 5; i++ )
+					tempGraphSVG.append("line").attr("class", "tempGraphHourMarker");
 			}
 
 			var startMoment = moment.unix( hourlyData[0].time );
 			startMoment.add( 6 - (startMoment.hours() % 6), "hours" );
 
 			var startUnix = startMoment.unix();
+			var sixHours  = 6 * 60 * 60;
 			tempGraphSVG.selectAll( ".tempGraphHourMarker")
 						.attr("x1", function(d,i) { 
-							return timeXScale( startUnix + (i * 6 * 60 * 60 ) )		// 6 hours
+							return timeXScale( startUnix + i * sixHours );
 						})
 						.attr("x2", function(d,i) { 
-							return timeXScale( startUnix + (i * 6 * 60 * 60 ) )		// 6 hours
+							return timeXScale( startUnix + i * sixHours );
 						})
 						.attr("y1", 0 )
 						.attr("y1", h );
+
+			// Draw sideways text with the hour for each marker
+			if( tempGraphSVG.selectAll( ".tempGraphHourMarkerText" ).empty() ) {
+				for( i=0; i < 5; i++ )
+					tempGraphSVG.append("text").attr("class", "tempGraphHourMarkerText");
+			}
+
+			tempGraphSVG.selectAll( ".tempGraphHourMarkerText" )
+						.text( function(d,i) {
+							return moment.unix( startUnix  + i * sixHours).format( "h a" );
+						})
+						.attr( "transform", function(d,i) {
+							return "translate(" + timeXScale( startUnix + i * sixHours ) + ",2)" +		// Tanslate...
+								   "rotate(90)" +														// ...then rotate...
+								   "translate(0,-2)";													// ...then translate again.
+						});
+
 		}
 	}
 

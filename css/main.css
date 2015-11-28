@@ -96,8 +96,8 @@ body, html {
 .tempgraphTempText
 {
     font-family: HelveticaNeue-Light;
-    font-size: 10px;
-    fill: #fff;
+    font-size:   10px;
+    fill:        white;
 }
 
 .tempgraphRainPath
@@ -120,20 +120,31 @@ body, html {
 	stroke-width: 0;
 }
 
-.tempGraphFreezeLine
+
+/* Hot/Cold Lines */
+.tempGraphHotColdLine
 {
-    stroke:           lightsteelblue;
 	stroke-width:     2;
 /*	stroke-dasharray: 1,1;*/
 	stroke-opacity:   25%;
+	fill-opacity:     50%;
 }
 
-.tempGrapHotLine
+.tempGraphHotColdLine.freezeLine
 {
+	fill:             lightsteelblue;
+    stroke:           lightsteelblue;
+}
+
+.tempGraphHotColdLine.hotLine
+{
+	fill:             orange;
     stroke:           orange;
-	stroke-width:     2;
-/*	stroke-dasharray: 1,1;*/
-	stroke-opacity:   25%;
+}
+
+.tempGraphHotColdLine.lineIcon
+{
+	font-size:    15px;
 }
 
 .tempGraphHourMarker
@@ -141,7 +152,16 @@ body, html {
     stroke:           white;
 	stroke-width:     1;
 /*	stroke-dasharray: 1,1;*/
-	stroke-opacity:   15%;
+	stroke-opacity:   25%;
+}
+
+.tempGraphHourMarkerText
+{
+    font-family:  HelveticaNeue;
+    font-size:    8px;
+    fill:         white;
+	fill-opacity: 35%;
+	text-anchor:  begin;
 }
 
 /* -- Font Sizes -- */
@@ -291,27 +311,38 @@ body, html {
 
 /* -- Weather Forecast -- */
 .forecast-table {
-/*	float: right;*/
 	text-align: right;
 	font-size: 20px;
-	line-height: 20px;
+	line-height: 15px;
+}
+
+.forecast-table td, th
+{
+	border-spacing: 0;
+	border-collapse: collapse;
+	padding:0px;
+/*	border: 1px solid white;
+	border-left: 0px;*/
 }
 
 .forecast-table .day
 {
 	width: 75px;
 	text-align: right;
-}
-
-.forecast-table .-min, .forecast-table .temp-max  
-{
-	width: 45px;
-	text-align: right;
-}
-
-.forecast-table .day
-{
 	color: #999;
+}
+
+.forecast-table .temp-min, .forecast-table .temp-max  
+{
+	width: 40px;
+	text-align: right;
+	padding-left:0;
+}
+
+.forecast-table .forecast-icon
+{
+	text-align:   left;
+	padding-left: 13px;
 }
 
 /* -- Calendar -- */
