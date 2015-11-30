@@ -124,7 +124,7 @@ body, html {
 /* Hot/Cold Lines */
 .tempGraphHotColdLine
 {
-	stroke-width:     2;
+	stroke-width:     3;
 /*	stroke-dasharray: 1,1;*/
 	stroke-opacity:   25%;
 	fill-opacity:     50%;
@@ -132,8 +132,8 @@ body, html {
 
 .tempGraphHotColdLine.freezeLine
 {
-	fill:             lightsteelblue;
-    stroke:           lightsteelblue;
+	fill:             steelblue;
+    stroke:           steelblue;
 }
 
 .tempGraphHotColdLine.hotLine

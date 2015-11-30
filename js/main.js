@@ -523,10 +523,10 @@ jQuery(document).ready(function($) {
 						});
 
 			// Add the freezing and hot lines
-			updateWeatherForecast_DrawGraph_HotColdLine( 32, "freezeLine", "\uf076" )				// f076 is wi-snowflake-cold
-			updateWeatherForecast_DrawGraph_HotColdLine( 80, "hotLine",    "\uf072" )				// f076 is wi-hot
+			updateWeatherForecast_DrawGraph_HotColdLine( 32, "freezeLine", "\uf076",  0 )			// f076 is wi-snowflake-cold
+			updateWeatherForecast_DrawGraph_HotColdLine( 80, "hotLine",    "\uf072", -4 )			// f076 is wi-hot
 
-			function updateWeatherForecast_DrawGraph_HotColdLine( temp, className, icon ) {			// Subfunction of updateWeatherForecast_DrawGraph_Temp() for access to tempYScale
+			function updateWeatherForecast_DrawGraph_HotColdLine( temp, className, icon, offset ) {	// Subfunction of updateWeatherForecast_DrawGraph_Temp() for access to tempYScale
 				// Draw a line across the graph and place an icon at a given temperature
 				var tempPoint = tempYScale( temp );
 
@@ -544,7 +544,7 @@ jQuery(document).ready(function($) {
 												.text( icon );
 				}
 
-				tempGraphSVG.select( ".tempGraphHotColdLine.lineIcon." + className ).attr("x", w - 20).attr("y", tempPoint + 5);
+				tempGraphSVG.select( ".tempGraphHotColdLine.lineIcon." + className ).attr("x", w - 14 + offset).attr("y", tempPoint + 5);
 			}
 		}
 
