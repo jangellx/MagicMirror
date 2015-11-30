@@ -20,7 +20,11 @@ free API key (it's easy) from [developer.forecast.io](developer.forecast.io) and
 You get 1000 free requests a day, so I have my mirror update once every fifteen minutes instead of
 every minute.  Due to cross site scripting protections, using forecast.io also requires the use of
 a proxy.php that I modified from the [unofficial forecast.io Javascript library by Ian Tearle](https://github.com/iantearle/forecast.io-javascript-api).
+- Added a tempertuare and chance of rain graph with markers for freezing and hot (80 degree F) temperatures, inspired by the
+Wearther Underground iOS "Today" widget to provide an overview of the day's weather
 - Added MBTA alerts from the [http://realtime.mbta.com/](MBTA Realtime API).  Thos agaom reqiores getting your own key (easy to do) from the [http://realtime.mbta.com/Portal/Account/Register](MBTA developer site) and setting it and the route you want alerts for in config.js.  Only current alerts are shown, with minor alerts shown with white icons instead of red.  You get 10000 requests a day, so I update every five minutes.  This uses the smae proxy.php as the forecast.io implementation above due to issues I had getting JSONP to work.
+- Added holidays via [http://holidayapi.com/](HolidayAPI), augmenting it with filters and custom holidays
+(which draw in gold), both of which are set through the config.
 - Removed the fractional temperatures.
 - Added daily and weekly summary text from forecast.io.
 - Added current and next upcoming holidays under the time via HolidayAPI.com.
