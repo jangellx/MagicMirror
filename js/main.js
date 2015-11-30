@@ -46,14 +46,24 @@ jQuery(document).ready(function($) {
 	var lastCompliment;
 	var compliment;
 
-	var mbtaAlerts          = [];				// List of alerts as HTML, one for each alert we have a JSON request for
-	var mbtaAlertsPending   = 0;				// Number of JSON requests for alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
+	var mbtaAlerts          = [];				// List of MBTA alerts as HTML, one for each alert we have a JSON request for
+	var mbtaAlertsPending   = 0;				// Number of JSON requests for MBTA alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
 
-	var holidayThisDay      = [-1, -1]			// Used to decide if this is the same day as the last time we checked.  -1 means we havne't checked yet.
+	var holidayThisDay      = -1				// Used to decide if this is the same day as the last time we checked.  -1 means we havne't checked yet.
 
 	var tempGraphSVG;							// SVG used to draw the temp/rain graph into
 
-    moment.lang(lang);
+	moment.locale(lang, {						// Language localization
+		calendar : {							// Calendar localization used for upcoming holidays.  Should really be localized too...
+			lastDay : '[Yesterday was] ' ,
+			sameDay : '[Today is] ',
+			nextDay : '[Tomorrow is] ',
+			thisWeek : 'dddd [is] ',
+			lastWeek : '[Last] dddd [was] ',
+			nextWeek : 'dddd [is] ',
+			sameElse : 'MM/DD [is] '
+		}
+	});
 
 	//connect do Xbee monitor
 	// var socket = io.connect('http://rpi-alarm.local:8082');
@@ -201,7 +211,6 @@ jQuery(document).ready(function($) {
 		table = $('<table/>').addClass('xsmall').addClass('calendar-table');
 		opacity = 1;
 
-
 		for (var i in eventList) {
 			var e = eventList[i];
 
@@ -222,13 +231,11 @@ jQuery(document).ready(function($) {
 
 	// Holiday data comes from holidayapi.com.  We report the next holiday coming up after today,
 	//  and if today is a holiday.
-	function updateHolidays( whichHoliday )
+	(function updateHolidays()
 	{
-		var asUpcoming = (whichHoliday == 'holidaytoday') ? 0 : 1;
-
 		// The timer updates a once an hour, but we only need to refresh once a day.  We check to
 		//  see if the last time we updated on a different day; if not, we just rearm the timer.
-		if( holidayThisDay[ asUpcoming ] == moment().day() ) {
+		if( holidayThisDay == moment().day() ) {
 			setTimeout(function() {
 				updateHolidays();
 			}, 3500000);
@@ -236,31 +243,165 @@ jQuery(document).ready(function($) {
 			return;
 		}
 
-		holidayThisDay[ asUpcoming ] = moment().day();
+		holidayThisDay = moment().day();
 
-		var now = moment();
-		var holidayURL = 'http://holidayapi.com/v1/holidays?country=' + holidayCountry + '&year=' + now.format('YYYY') + '&month=' + now.format('M') + '&day=' + now.format('D');
-		if( asUpcoming )
-			holidayURL += "&upcoming";
+		var now        = moment();
+		var holidayURL = 'http://holidayapi.com/v1/holidays?country=' + holidayCountry + '&year=';
 
-		$.getJSON(holidayURL, function(jsonDate, textStatus) {
+		$.getJSON( holidayURL + now.format('YYYY'), function(jsonDate, textStatus) {
 			// Success; update the holiday string, even if it's just empty
-			var holidayText = "";
-			if( (jsonDate.status == 200) && (jsonDate.holidays.length > 0) ) {
-				if( asUpcoming ) {
-					var futureDate = moment( jsonDate.holidays[0].date, 'YYYY-MM-DD' );
-					holidayText = '&bull; ' + futureDate.format( "dddd, MMMM Do" ) + ' is ' + jsonDate.holidays[0].name;
-				} else {
-					holidayText = '&bull; Today is ' + jsonDate.holidays[0].name + '!';
-				}
+			if( !jsonDate.status == 200 ) {
+				setTimeout(function() {
+					updateHolidays( whichHoliday );
+				}, 120000);
+				
+				return;
 			}
 
-			$('.' + whichHoliday ).updateWithText( holidayText, 1000 );
+			// We got a year's worth of data, so we look for the first five holidays after today
+			var holidayText = "";
+			var numFound    = 0;
+			var opacity     = 1.0;
+			var now         = moment();
 
-			// Restart the timer in an hour
-			setTimeout(function() {
-				updateHolidays( whichHoliday );
-			}, 3500000);
+			addHolidaysFromList( jsonDate.holidays, true );
+			if( numFound < holidaysShown) {
+				// Didn't find enough holidays this year; try next year, and give up after that
+				$.getJSON( holidayURL + now.add( 1, "years" ).format('YYYY'), function(jsonDate2, textStatus) {
+					if( !jsonDate.status == 200 ) {
+						setTimeout(function() {
+							updateHolidays( whichHoliday );
+						}, 120000);
+						
+						return;
+					}
+
+					addHolidaysFromList( jsonDate2.holidays, false );
+					$('.holidays').updateWithText( holidayText, 1000 );
+
+				}).fail (function( jqxhr, textStatus, error ) {
+					// Failed; restart the timer for two minutes
+					setTimeout(function() {
+						updateHolidays( whichHoliday );
+					}, 120000);
+				});
+				
+			} else{
+				// We're done
+				$('.holidays').updateWithText( holidayText, 1000 );
+			}
+
+			if( numFound == holidaysShown) {
+				// Restart the timer in an hour
+				setTimeout(function() {
+					updateHolidays( whichHoliday );
+				}, 3500000);
+			}
+
+			// Nested function to add holidays from the list
+			function addHolidaysFromList( holidays, doDateTest ) {
+				var	prevDate = now;
+				for( var key in holidays ) {
+					var thisHoliday = holidays[key];
+					var futureDate = moment( thisHoliday[0].date, 'YYYY-MM-DD' );
+					if( doDateTest && (prevDate > futureDate ) )
+							continue;
+
+					// Filter out holidays we don't care about
+					var i, j;
+					for( i=0; i < holidayFilter.length; i++ ) {
+						if( (futureDate.format( "YYYY-" ) + holidayFilter[i]) == key )
+							break;
+					}
+
+					if( i != holidayFilter.length )
+						continue;
+					// See if any custom holidays should be inserted before this one
+					for( j=0; j < holidaysCustom.length; j++ ) {
+						var customDate = moment( futureDate.format( "YYYY-" ) + holidaysCustom[j].date, 'YYYY-MM-DD' );
+						var thisCustom = [ {date:holidaysCustom[j].date, name: holidaysCustom[j].name, isCustom:true } ];
+
+						if( (futureDate.format( "YYYY-" ) + holidaysCustom[j].date) == key ) {
+							// Same date as the test date; add it to that date
+							thisHoliday.push( thisCustom[0] );
+							continue;
+						} 
+
+						// New date; if it fits between the current and previous date, add it
+						if( (customDate > prevDate) && (customDate < futureDate) ) {
+							holidayText += buildHolidayString( thisCustom, customDate );
+							if( holidaysShown == numFound )
+								break;
+						}
+					}
+
+					// Test before adding, just to be sure
+					if( holidaysShown == numFound )
+						break;
+
+					// Add this holiday
+					holidayText += buildHolidayString( thisHoliday, futureDate );
+
+					// If we've hit our limit, stop
+					if( holidaysShown == numFound )
+						break;
+
+					prevDate = futureDate;
+				}
+
+				// Nested function to return a single holiday as text 
+				function buildHolidayString( thisHoliday, date ) {
+					var thisHolidayText = "";
+					var numAddedHere    = 0;
+
+					for( i=0; i < thisHoliday.length; i++ ) {
+						// Filter out any holidays we don't care about
+						for( var j=0; j < holidayFilter.length; j++ ) {
+							if( thisHoliday[i].name.search( holidayFilter[j] ) != -1 )
+								break;
+						}
+
+						if( j < holidayFilter.length )
+							continue;
+
+						if( numAddedHere == 0 ) {
+							// Newly-added element; set the opacity
+							thisHolidayText += '<div style="opacity:' + opacity + '">';
+							thisHolidayText += '&bull; ';
+						}
+
+						if( numAddedHere > 0 ) {
+							// Add commas/"and" if applicable
+							if( i < thisHoliday.length-1 )
+								thisHolidayText += ",";
+							else
+								thisHolidayText += " and ";
+
+						} else {
+							// Add the date
+							thisHolidayText += date.calendar();
+						}
+
+						// Add the name, coloring custom holidays specially
+						if( thisHoliday[i].hasOwnProperty( 'isCustom' ) )
+							thisHolidayText += '<span class="holidayCustom">';
+
+						numAddedHere++;
+						thisHolidayText += thisHoliday[i].name;
+
+						if( thisHoliday[i].hasOwnProperty( 'isCustom' ) )
+							thisHolidayText += "</span>";
+					}
+
+					if( numAddedHere > 0 ) {
+						thisHolidayText += '</div>'
+						opacity         -= (numFound == 0) ? 0.4 : (numAddedHere / (holidaysShown-1)) * 0.4;
+						numFound++;
+					}
+
+					return thisHolidayText;
+				}
+			}
 
 		}).fail (function( jqxhr, textStatus, error ) {
 			// Failed; restart the timer for two minutes
@@ -269,10 +410,7 @@ jQuery(document).ready(function($) {
 			}, 120000);
 
 		});
-	};
-
-	updateHolidays( 'holidaytoday' );
-	updateHolidays( 'holidaynext'  );
+	})();
 
 	(function updateCompliment()
 	{

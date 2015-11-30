@@ -15,6 +15,25 @@ var mbtaRoute      = "Insert your MBTA route string here"
 // Country code for holidays, as per holidayapi.com
 var holidayCountry = "US";
 
+// Holiday filter
+//  Add dates you don't want to see in the fomat of "MM-DD".  This can
+//  also be a string matching one of the holiday names.
+var holidayFilter = [
+			'01-06',		// Epiphany
+			'01-07',		// Orthodox Christmas
+			'12-08',		// Immaculate Conception of the Virgin Mary
+			'Kwanza'		// All the days of Kwanza
+];
+
+// Custom holidays to add to the holiday list.  These are assumed
+//  to be in chronological order, and can be on the same day as
+//  an existing holiday, but should be unique within the array.
+//  These are drawn in gold in the holiday list.  Note that the
+//  array must exist, but can be empty.
+var holidaysCustom = [
+//			{ date: '01-02', name: 'Day After New Years' },
+];
+
 // RSS Feed here
 var feed = 'http://www.wbur.org/feed'
 

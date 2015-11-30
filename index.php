@@ -17,8 +17,7 @@
 	<div class="top left">
 		<div class="date small dimmed"></div>
 		<div class="time"></div>
-		<div class="holidaytoday xxsmall dimmed"></div>
-		<div class="holidaynext xxsmall dimmed"></div>
+		<div class="holidays xxsmall dimmed"></div>
 		<div class="calendar xxsmall"></div>
 		<div class="mbta xxxsmall dimmed"></div>
 	</div>
@@ -53,7 +52,7 @@
 
 <script src="js/jquery.js"></script>
 <script src="js/ical_parser.js"></script>
-<script src="js/moment-with-langs.min.js"></script>
+<script src="js/moment-with-locales.js"></script>
 <script src="js/config.js"></script>
 <script src="js/rrule.js"></script>
 <script src="js/d3.js"></script>

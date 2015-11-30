@@ -356,6 +356,10 @@ body, html {
 	text-align: right;
 }
 
+.holidayCustom {
+	color: gold;
+}
+
 /* -- MBTA -- */
 .mbta {
 	width: 225px;
