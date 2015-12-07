@@ -12,6 +12,9 @@ var darkSkyLon     = "-71.000"
 var mbtaAPIKey     = "Insert your API key from http://realtime.mbta.com/Portal/ here"
 var mbtaRoute      = "Insert your MBTA route string here"
 
+// Number of hours to display in the temperature/rain graph
+var tempGraphRangeOfHours = 30;
+
 // Country code for holidays, as per holidayapi.com
 var holidayCountry = "US";
 

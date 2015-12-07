@@ -541,7 +541,7 @@ jQuery(document).ready(function($) {
 		}
 
 		// Filter the data down to just 24 hours
-		var filteredHourlyData = hourlyData.filter( function(d, i) { return (i < 23); });
+		var filteredHourlyData = hourlyData.filter( function(d, i) { return (i < tempGraphRangeOfHours-1); });
 
 		// Draw each graph into the SVG
 		var timeXScale = d3.time.scale().domain([ d3.min( filteredHourlyData, function(d) { return d.time } ),
@@ -687,10 +687,12 @@ jQuery(document).ready(function($) {
 		}
 
 		function updateWeatherForecast_DrawGraph_HourMarkers( hourlyData ) {
-			// Draw markers at 6 AM, noon, 6 PM and midnight.  We draw five, since the first
-			//  or last one may be off the end of the graph, and thus only four will be drawn.
+			// Draw markers at 6 AM, noon, 6 PM and midnight.  We draw n+1, since the first
+			//  or last one may be off the end of the graph, and thus only n will be drawn.
+			var ticks = (tempGraphRangeOfHours / 6 )+ 1;
+
 			if( tempGraphSVG.selectAll( ".tempGraphHourMarker" ).empty() ) {
-				for( i=0; i < 5; i++ )
+				for( i=0; i < ticks; i++ )
 					tempGraphSVG.append("line").attr("class", "tempGraphHourMarker");
 			}
 
@@ -711,7 +713,7 @@ jQuery(document).ready(function($) {
 
 			// Draw sideways text with the hour for each marker
 			if( tempGraphSVG.selectAll( ".tempGraphHourMarkerText" ).empty() ) {
-				for( i=0; i < 5; i++ )
+				for( i=0; i < ticks; i++ )
 					tempGraphSVG.append("text").attr("class", "tempGraphHourMarkerText");
 			}
 
