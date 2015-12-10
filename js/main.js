@@ -853,7 +853,9 @@ jQuery(document).ready(function($) {
 
 		// Update the div itself
 		$('.mbta').updateWithText(alerts, 1000);
-		$('.luMBTA').updateWithText('mbta (' + nonOngoingCount + '/' + mbtaAlerts.length + ' alerts): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
+		$('.luMBTA').updateWithText('mbta (' + nonOngoingCount + '/'
+		                                     + mbtaAlerts.length + (mbta.Alerts.length == 1) ? ' alerts): ' : ' alert): '
+		                                     + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
 		// Rearm the timer for 5 minutes
 		setTimeout( updateMBTAServiceAlerts, 300000);
@@ -920,8 +922,11 @@ jQuery(document).ready(function($) {
 				alert    += alertText;
 				alert    += '</div>'
 
-				// Add it to the array
-				mbtaAlerts[ index ] = alert;
+				// Make sure this exact string isn't already in the array, since that can happen sometimes for some reaosn
+				if( $.inArray(alert, mbtaAlerts) == -1 ) {
+					// Now we can add it to the array
+					mbtaAlerts[ index ] = alert;
+				}
 			}
 
 			// If no more alerts are pending, update the div
