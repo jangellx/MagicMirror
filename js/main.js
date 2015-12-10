@@ -502,7 +502,7 @@ jQuery(document).ready(function($) {
 			$('.luWeather').updateWithText('weather: ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
 			// Generate the graph
-			updateWeatherForecast_DrawGraph( json.hourly.data );
+			updateWeatherForecast_DrawGraph( json.daily.data, json.hourly.data );
 
 			// Update in 15 minutes
 			setTimeout(updateWeatherForecast, 900000);
@@ -513,10 +513,10 @@ jQuery(document).ready(function($) {
 		});
 	})();
 
-	// Draw the weather graph.  This is simialr to the graph drawn in the Weather Underground iOS app,
+	// Draw the weather graph.  This is similar to the graph drawn in the Weather Underground iOS app,
 	//  with the next 24 hours temperature curve overlaid over the chance of rain.  We take advantage
 	//  of Dark Sky's confidence to draw a wider or thinner rain line.
-	function updateWeatherForecast_DrawGraph( hourlyData ) {
+	function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 		// Create the SVG, if needed.  We just reuse the SVG instead of creating a new one each time,
 		//  and animate the values within it
 		var marginL  = 20;
@@ -543,16 +543,56 @@ jQuery(document).ready(function($) {
 		// Filter the data down to just 24 hours
 		var filteredHourlyData = hourlyData.filter( function(d, i) { return (i < tempGraphRangeOfHours-1); });
 
-		// Draw each graph into the SVG
+		// Set up the time scale
 		var timeXScale = d3.time.scale().domain([ d3.min( filteredHourlyData, function(d) { return d.time } ),
 												  d3.max( filteredHourlyData, function(d) { return d.time } ) ])
 										.range([ marginL, w - marginR ]);
 
+
+		// Draw each graph into the SVG
+		updateWeatherForecast_DrawGraph_Sunlight( dailyData );
 		updateWeatherForecast_DrawGraph_Rain( filteredHourlyData );
 		updateWeatherForecast_DrawGraph_Temp( filteredHourlyData );
 		updateWeatherForecast_DrawGraph_HourMarkers( filteredHourlyData );
 
+		updateWeatherForecast_DrawGraph_Rain( filteredHourlyData );
+
 		// - Graph Drawing Functions - 
+		function updateWeatherForecast_DrawGraph_Sunlight( hourlyData ) {
+			// Draw two boxes representing sunlight over the next 48 hours.
+			// - Create the boxes, if needed
+			if( tempGraphSVG.select( ".tempgraphDaylight" ).empty() ) {
+				for( var i=0; i < 2; i++ ) {
+					tempGraphSVG.append( "rect" )
+								.attr( "class", "tempgraphDaylight" )
+								.attr( "y",      1   )
+								.attr( "height", h-1 );
+				}
+			}
+			
+			// - Update the x and widht of the boxes
+			tempGraphSVG.selectAll( ".tempgraphDaylight" )
+						.attr( "x", function(d,i) {
+							return Math.max( marginL, timeXScale( dailyData[i].sunriseTime ) );
+						})
+						.attr( "width", function(d,i) {
+							var	offset = 0.0;
+							var sunrise = timeXScale( dailyData[i].sunriseTime );
+
+							if( marginL > sunrise )
+								offset = marginL - sunrise;
+
+							return timeXScale( dailyData[i].sunsetTime ) - sunrise - offset;
+						})
+						.attr( "opacity", function(d,i) {
+							if( (timeXScale( dailyData[i].sunsetTime  ) <     marginL) ||
+							    (timeXScale( dailyData[i].sunriseTime ) > w - marginR) )
+								return 0.0;
+							else
+								return 1.0;
+						});
+		}
+
 		function updateWeatherForecast_DrawGraph_Rain( hourlyData ) {
 			// Draw a filled line graph for the rain as a propability from 0 to 100% over time
 			//  Note that hourly data includes 48 hous worth, so we can it at 24.
