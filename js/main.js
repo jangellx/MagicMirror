@@ -562,7 +562,7 @@ jQuery(document).ready(function($) {
 			// Draw two boxes representing sunlight over the next 48 hours.
 			// - Create the boxes, if needed
 			if( tempGraphSVG.select( ".tempgraphDaylight" ).empty() ) {
-				for( var i=0; i < 2; i++ ) {
+				for( var i=0; i < 3; i++ ) {
 					tempGraphSVG.append( "rect" )
 								.attr( "class", "tempgraphDaylight" )
 								.attr( "y",      1   )
@@ -854,7 +854,7 @@ jQuery(document).ready(function($) {
 		// Update the div itself
 		$('.mbta').updateWithText(alerts, 1000);
 		$('.luMBTA').updateWithText('mbta (' + nonOngoingCount + '/'
-		                                     + mbtaAlerts.length + (mbta.Alerts.length == 1) ? ' alerts): ' : ' alert): '
+		                                     + mbtaAlerts.length + (mbtaAlerts.length == 1) ? ' alerts): ' : ' alert): '
 		                                     + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
 		// Rearm the timer for 5 minutes
