@@ -79,6 +79,11 @@ body, html {
 	float: right;
 }
 
+.tempgraphDaylight
+{
+	fill:         #222;
+}
+
 .tempgraphTempMark
 {
 	fill:         red;

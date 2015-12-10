@@ -252,7 +252,7 @@ jQuery(document).ready(function($) {
 			// Success; update the holiday string, even if it's just empty
 			if( !jsonDate.status == 200 ) {
 				setTimeout(function() {
-					updateHolidays( whichHoliday );
+					updateHolidays();
 				}, 120000);
 				
 				return;
@@ -270,7 +270,7 @@ jQuery(document).ready(function($) {
 				$.getJSON( holidayURL + now.add( 1, "years" ).format('YYYY'), function(jsonDate2, textStatus) {
 					if( !jsonDate.status == 200 ) {
 						setTimeout(function() {
-							updateHolidays( whichHoliday );
+							updateHolidays();
 						}, 120000);
 						
 						return;
@@ -282,7 +282,7 @@ jQuery(document).ready(function($) {
 				}).fail (function( jqxhr, textStatus, error ) {
 					// Failed; restart the timer for two minutes
 					setTimeout(function() {
-						updateHolidays( whichHoliday );
+						updateHolidays();
 					}, 120000);
 				});
 				
@@ -294,7 +294,7 @@ jQuery(document).ready(function($) {
 			if( numFound == holidaysShown) {
 				// Restart the timer in an hour
 				setTimeout(function() {
-					updateHolidays( whichHoliday );
+					updateHolidays();
 				}, 3500000);
 			}
 
@@ -406,7 +406,7 @@ jQuery(document).ready(function($) {
 		}).fail (function( jqxhr, textStatus, error ) {
 			// Failed; restart the timer for two minutes
 			setTimeout(function() {
-				updateHolidays( whichHoliday );
+				updateHolidays();
 			}, 120000);
 
 		});
