@@ -300,11 +300,13 @@ jQuery(document).ready(function($) {
 
 			// Nested function to add holidays from the list
 			function addHolidaysFromList( holidays, doDateTest ) {
-				var	prevDate = now;
+				var	prevDate = moment();
+				prevDate.add( -1, "days" ); 			// To make sure that we get today as well as future dates
+
 				for( var key in holidays ) {
 					var thisHoliday = holidays[key];
 					var futureDate = moment( thisHoliday[0].date, 'YYYY-MM-DD' );
-					if( doDateTest && (prevDate > futureDate ) )
+					if( doDateTest && (prevDate > futureDate) )
 							continue;
 
 					// Filter out holidays we don't care about
@@ -316,6 +318,7 @@ jQuery(document).ready(function($) {
 
 					if( i != holidayFilter.length )
 						continue;
+
 					// See if any custom holidays should be inserted before this one
 					for( j=0; j < holidaysCustom.length; j++ ) {
 						var customDate = moment( futureDate.format( "YYYY-" ) + holidaysCustom[j].date, 'YYYY-MM-DD' );
@@ -394,6 +397,9 @@ jQuery(document).ready(function($) {
 					}
 
 					if( numAddedHere > 0 ) {
+						if( date.month() == now.month() && date.day() == now.day() )
+							thisHolidayText += "!"
+
 						thisHolidayText += '</div>'
 						opacity         -= (numFound == 0) ? 0.4 : (numAddedHere / (holidaysShown-1)) * 0.4;
 						numFound++;
