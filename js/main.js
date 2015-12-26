@@ -36,6 +36,12 @@ function kmh2beaufort(kmh)
 	return 12;
 }
 
+// from http://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
+function shadeColor2(color, percent) {   
+    var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
+    return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
+}
+
 jQuery(document).ready(function($) {
 
 	var news = [];
@@ -52,6 +58,7 @@ jQuery(document).ready(function($) {
 	var holidayThisDay      = -1				// Used to decide if this is the same day as the last time we checked.  -1 means we havne't checked yet.
 
 	var tempGraphSVG;							// SVG used to draw the temp/rain graph into
+	var weekGraphSVG;							// SVG used to draw the weekly forecast graph into
 
 	moment.locale(lang, {						// Language localization
 		calendar : {							// Calendar localization used for upcoming holidays.  Should really be localized too...
@@ -477,29 +484,9 @@ jQuery(document).ready(function($) {
 			var windString = '<span class="wi wi-strong-wind xdimmed"></span> ' + kmh2beaufort(wind) ;
 			$('.windsun').updateWithText(windString+' '+sunString, 1000);
 
-			// Update the forecast
-			var forecastTable = $('<table />').addClass('forecast-table');
-			var opacity = 1;
-
-			for (var i in json.daily.data) {
-				var day       = json.daily.data[i];
-			    var iconClass = "wi wi-forecast-io-" + day.icon;
-				var dt        = new Date( day.time * 1000 );
-
-				var row = $('<tr />').css('opacity', opacity);
-				row.append($('<td/>').addClass('day').html(moment.weekdaysShort(dt.getDay())));
-				row.append($('<td/>').addClass('icon-small forecast-icon').addClass(iconClass));
-				row.append($('<td/>').addClass('temp-max').html(roundVal(day.temperatureMax) + '&deg;'));
-				row.append($('<td/>').addClass('temp-min').html(roundVal(day.temperatureMin) + '&deg;'));
-
-				forecastTable.append(row);
-				opacity -= 0.155;
-
-				if( i > 5 )
-					break;
-			}
-
-			$('.forecast').updateWithText(forecastTable, 1000);
+			// Update the weekly forecast
+//			updateWeatherForcast_UpdateWeeklyTable( json );
+			updateWeatherForcast_UpdateWeeklyGraph( json.daily.data );
 
 			// Update the summary text
 			$('.summary').updateWithText(json.hourly.summary + ' ' + json.daily.summary /*+ '<br><br>' +
@@ -519,13 +506,228 @@ jQuery(document).ready(function($) {
 		});
 	})();
 
+	// Update the weekly forecast as a table of temperatures with an weather icon on each day
+	function updateWeatherForcast_UpdateWeeklyTable( json ) {
+		var forecastTable = $('<table />').addClass('forecast-table');
+		var opacity = 1;
+
+		for (var i in json.daily.data) {
+			var day       = json.daily.data[i];
+			var iconClass = "wi wi-forecast-io-" + day.icon;
+			var dt        = new Date( day.time * 1000 );
+
+			var row = $('<tr />').css('opacity', opacity);
+			row.append($('<td/>').addClass('day').html(moment.weekdaysShort(dt.getDay())));
+			row.append($('<td/>').addClass('icon-small forecast-icon').addClass(iconClass));
+			row.append($('<td/>').addClass('temp-max').html(roundVal(day.temperatureMax) + '&deg;'));
+			row.append($('<td/>').addClass('temp-min').html(roundVal(day.temperatureMin) + '&deg;'));
+
+			forecastTable.append(row);
+			opacity -= 0.155;
+
+			if( i > 5 )
+				break;
+		}
+
+		$('.forecast').updateWithText(forecastTable, 1000);
+	}
+
+    // Draw the weekly forecast as a graph, similar to how Dark Sky does.  Each day is drawn as a bar
+	// prepresenting the low and high temperature.
+	function updateWeatherForcast_UpdateWeeklyGraph( dailyData ) {
+		var marginL       = 85;
+		var marginR       = 17;
+		var marginT       =  2;
+		var marginB       = 10;
+		var lineMargin    =  8;
+		var dayRightEdge  = 37;
+		var barShift      =  8;
+		var barTextMargin =  2;
+		var barTextShift  = -2;
+		var iconRightEdge = dayRightEdge + 27;
+		var w = parseInt( $('.weekgraph').css('width') );
+		var h = parseInt( $('.weekgraph').css('height') );
+		var numDays       =  7;
+		var lineHeight    = (h - marginT - marginB) / numDays;
+		var opacityShift  =  0.12
+
+		// We just want 7 days of data
+		var filteredDays = dailyData.filter( function(d, i) { return (i < numDays); });
+
+		weekGraphSVG = d3.select( "#weekGraphSVG" );
+		if( weekGraphSVG.empty() ) {
+			// Set up the SVG
+			weekGraphSVG = d3.select(".weekgraph").append("svg")
+							 .attr('width',  w)
+							 .attr('height', h)
+							 .attr('id',     "weekGraphSVG" );
+		}
+
+		// Set up the scale for the temps
+		var tempXScale = d3.time.scale().domain([ d3.min( filteredDays, function(d) { return d.temperatureMin } ),
+												  d3.max( filteredDays, function(d) { return d.temperatureMax } ) ])
+										.range([ marginL, w - marginR ]);
+
+		// Add the freezing and hot lines
+		updateWeatherForcast_UpdateWeeklyGraph_HotColdLine( 32, "freezeLine", "\uf076",  0 )			// f076 is wi-snowflake-cold
+		updateWeatherForcast_UpdateWeeklyGraph_HotColdLine( 80, "hotLine",    "\uf072", -4 )			// f076 is wi-hot
+
+		// Draw labels down the left side
+		// - Create the labels
+		weekGraphSVG.selectAll( ".weekgraphDayText" )
+					.data( filteredDays )
+					.enter()
+					.append( "text" )
+					.attr(   "class", "weekgraphDayText" )
+					.attr(   "x", dayRightEdge )
+					.attr(   "text-anchor", "end")
+					.style(  "fill",    function(d,i) { return shadeColor2( "#DDDDDD", -i * opacityShift ) } );
+
+		// - Update all labels
+		weekGraphSVG.selectAll( ".weekgraphDayText" )
+					.text( function(d) {
+						var dt = new Date( d.time * 1000 );
+						return moment.weekdaysShort( dt.getDay() );
+					})
+					.attr( "y", function(d,i) {
+						return i * lineHeight + lineHeight + marginT;
+					});
+
+		// Draw the weather icon to the right of each day
+		// - Create the icon label
+		weekGraphSVG.selectAll( ".weekgraphDayIcon" )
+					.data( filteredDays )
+					.enter()
+					.append( "text" )
+					.attr(   "class", "weekgraphDayIcon wi" )
+					.attr(   "x", iconRightEdge )
+					.attr(   "text-anchor", "end")
+					.style(  "fill",    function(d,i) { return shadeColor2( "#DDDDDD", -i * opacityShift ) } );
+
+		// - Update all icon labels
+		//   We can't use the convenient CSS from weather-icons.css because Javascript can't read that, and :before isn't available
+		//    without evaluating the element, so we just build our own table and look into that.
+		var svgWeatherIcons = { "clear-day"           : "\uf00d",
+								"clear-night"         : "\uf02e",
+								"rain"                : "\uf019",
+								"snow"                : "\uf01b",
+								"sleet"               : "\uf0b5",
+								"wind"                : "\uf050",
+								"partly-cloudy-day"   : "\uf002",
+								"fog"                 : "\uf014",
+								"cloudy"              : "\uf013",
+								"partly-cloudy-night" : "\uf031",
+								"hail"                : "\uf015",
+								"thunderstorm"        : "\uf01e",
+								"tornado"             : "\uf056" }
+
+		weekGraphSVG.selectAll( ".weekgraphDayIcon" )
+					.text( function(d) {
+						return svgWeatherIcons[ d.icon ];
+					})
+					.attr( "y", function(d,i) {
+						return i * lineHeight + lineHeight + marginT;
+					});
+
+		// Draw rounded rectangles for each day
+		// - Add one rect per day
+		weekGraphSVG.selectAll( ".weekgraphDayTempBar" )
+					.data( filteredDays )
+					.enter()
+					.append( "rect" )
+					.attr(   "class", "weekgraphDayTempBar" )
+					.attr(   "y",  function(d,i) { 
+						return i * lineHeight + marginT + lineMargin + barShift;
+					})
+					.attr(   "height",   lineHeight - lineMargin*2  )
+					.attr(   "ry",      (lineHeight - lineMargin)/4 )
+					.attr(   "rx",      (lineHeight - lineMargin)/4 )
+					.style(  "fill",    function(d,i) { return shadeColor2( "#DDDDDD", -i * opacityShift ) } );
+
+		// - Update the left and right edges of the rect
+		weekGraphSVG.selectAll( ".weekgraphDayTempBar" )
+					.attr(   "x",     function(d,i) { 
+						return tempXScale( d.temperatureMin );
+					})
+					.attr(   "width", function(d,i) { 
+						return tempXScale( d.temperatureMax ) - tempXScale( d.temperatureMin );
+					});
+
+
+		// Draw temperature labels on the left and right side of each bar
+		// - Create min labels
+		weekGraphSVG.selectAll( ".weekgraphTempTextMin" )
+					.data( filteredDays )
+					.enter()
+					.append( "text" )
+					.attr(   "class", "weekgraphTempTextMin weekgraphTempText" )
+					.attr(   "text-anchor", "end")
+					.style(  "fill",    function(d,i) { return shadeColor2( "#DDDDDD", -i * opacityShift ) } );
+
+		// - Update all min labels
+		weekGraphSVG.selectAll( ".weekgraphTempTextMin" )
+					.text( function(d) {
+						return Math.round( d.temperatureMin ).toString() + "\u00B0";				// Unicode for &deg;
+					})
+					.attr( "x", function(d,i) {
+						return tempXScale( d.temperatureMin ) - barTextMargin;
+					})
+					.attr( "y", function(d,i) {
+						return i * lineHeight + lineHeight + marginT + barTextShift;
+					});
+
+		// - Create max labels
+		weekGraphSVG.selectAll( ".weekgraphTempTextMax" )
+					.data( filteredDays )
+					.enter()
+					.append( "text" )
+					.attr(   "class", "weekgraphTempTextMax weekgraphTempText" )
+					.attr(   "text-anchor", "begin")
+					.style(  "fill",    function(d,i) { return shadeColor2( "#DDDDDD", -i * opacityShift ) } );
+
+		// - Update all max labels
+		weekGraphSVG.selectAll( ".weekgraphTempTextMax" )
+					.text( function(d) {
+						return Math.round( d.temperatureMax ).toString() + "\u00B0";				// Unicode for &deg;
+					})
+					.attr( "x", function(d,i) {
+						return tempXScale( d.temperatureMax ) + barTextMargin;
+					})
+					.attr( "y", function(d,i) {
+						return i * lineHeight + lineHeight + marginT + barTextShift;
+					});
+
+		function updateWeatherForcast_UpdateWeeklyGraph_HotColdLine( temp, className, icon, offset ) {	// Subfunction of updateWeatherForcast_UpdateWeeklyGraph() for access to tempXScale
+			// Draw a line across the graph and place an icon at a given temperature
+			var tempPoint = tempXScale( temp );
+
+			// Add/update the line
+			if( weekGraphSVG.select( ".tempGraphHotColdLine ." + className ).empty() ) {
+				weekGraphSVG.append( "line").attr("class", "tempGraphHotColdLine " + className );
+			}
+
+			weekGraphSVG.select( ".tempGraphHotColdLine." + className).attr("x1", tempPoint ).attr("y1", marginT + lineMargin + barShift )
+																	  .attr("x2", tempPoint ).attr("y2", h - marginB );
+
+/*			// Add/update the icon -- these don't really work well here
+			if( weekGraphSVG.select( ".tempGraphHotColdLine.lineIcon." + className ).empty() ) {
+				weekGraphSVG.append( "text").attr("class", "tempGraphHotColdLine lineIcon wi " + className )
+											.text( icon )
+											.attr( "text-anchor", "middle" );
+			}
+
+			weekGraphSVG.select( ".tempGraphHotColdLine.lineIcon." + className ).attr("y", h - 14 + offset).attr("x", tempPoint);
+*/
+		}
+	}
+	
 	// Draw the weather graph.  This is similar to the graph drawn in the Weather Underground iOS app,
 	//  with the next 24 hours temperature curve overlaid over the chance of rain.  We take advantage
 	//  of Dark Sky's confidence to draw a wider or thinner rain line.
 	function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 		// Create the SVG, if needed.  We just reuse the SVG instead of creating a new one each time,
 		//  and animate the values within it
-		var marginL  = 20;
+		var marginL  =  5;
 		var marginR  =  5;
 		var marginT  = 15;
 		var marginB  =  5;
@@ -536,9 +738,9 @@ jQuery(document).ready(function($) {
 		if( tempGraphSVG.empty() ) {
 			// Set up the SVG
 			tempGraphSVG = d3.select(".tempgraph").append("svg")
-							 .attr('width', w)
+							 .attr('width',  w)
 							 .attr('height', h)
-							 .attr('id', "tempGraphSVG" );
+							 .attr('id',     "tempGraphSVG" );
 
 			// Draw a line at the top of the graph so that we know where 100% chance of rain is
 			tempGraphSVG.append( "line").attr("x1", marginL ).attr("y1", 0 )
@@ -546,7 +748,7 @@ jQuery(document).ready(function($) {
 										.attr("class", "tempGraphTopEdgeLine");
 		}
 
-		// Filter the data down to just 24 hours
+		// Filter the data down to just the requested number of hours
 		var filteredHourlyData = hourlyData.filter( function(d, i) { return (i < tempGraphRangeOfHours-1); });
 
 		// Set up the time scale

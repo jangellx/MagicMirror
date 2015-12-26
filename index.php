@@ -26,8 +26,9 @@
 	    <div class="windsun small dimmed"></div>
 		<div class="temp"></div>
 		<div class="tempgraph"></div>
-		<div class="forecast small dimmed"></div>
-		<div class="summary xxsmall dimmed"></div>
+		<!-- <div class="forecast small dimmed"></div>  Old table method; replaced with weekgraph SVG -->
+		<div class="weekgraph"></div>
+		<div class="summary xxsmall2 dimmed"></div>
 	</div>
 
 	<div class="farbottom right">

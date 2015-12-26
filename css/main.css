@@ -71,12 +71,17 @@ body, html {
 	bottom: 50px;
 }
 
+.temp
+{
+	text-align:center
+}
+
 /* -- Temperature and Rain Graph -- */
 .tempgraph
 {
 	width: 200px;
 	height: 80px;
-	float: right;
+	float: block;
 }
 
 .tempgraphDaylight
@@ -169,10 +174,51 @@ body, html {
 	text-anchor:  begin;
 }
 
+/* Week graph */
+.weekgraph
+{
+	width:  200px;
+	height: 200px;
+	float:  block;
+}
+
+.weekgraphDayText
+{
+    font-family: HelveticaNeue-Light;
+    font-size:   18px;
+    fill:        white;
+}
+
+.weekgraphDayIcon
+{
+	font-size:   18px;
+    fill:        white;
+	text-anchor: end;
+}
+
+.weekgraphDayTempBar
+{
+	fill:        #DDD;
+    stroke:      none;
+}
+
+.weekgraphTempText
+{
+	font-size:   10px;
+    fill:        white;
+}
+
 /* -- Font Sizes -- */
 .xxxsmall
 {
 	font-size: 10px;
+	letter-spacing: 0px;
+	font-family: "HelveticaNeue-Medium";
+}
+
+.xxsmall2
+{
+	font-size: 12px;
 	letter-spacing: 0px;
 	font-family: "HelveticaNeue-Medium";
 }
