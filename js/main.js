@@ -582,7 +582,7 @@ jQuery(document).ready(function($) {
 							if( marginL > sunrise )
 								offset = marginL - sunrise;
 
-							return timeXScale( dailyData[i].sunsetTime ) - sunrise - offset;
+							return Math.max( timeXScale( dailyData[i].sunsetTime ) - sunrise - offset, 0 );		// max() works aorund a neagative width issue
 						})
 						.attr( "opacity", function(d,i) {
 							if( (timeXScale( dailyData[i].sunsetTime  ) <     marginL) ||
