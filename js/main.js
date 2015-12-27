@@ -1041,11 +1041,11 @@ jQuery(document).ready(function($) {
 				nonOngoingCount++;
 		}
 
-		var alertCountText = (mbtaAlerts.length == 1) ? 'alert' : 'alerts';
 		if( nonOngoingCount > 0 ) {
 			// We have at least one alert to show
 			var	step = 0;
 
+			var alertCountText = (nonOngoingCount == 1) ? 'alert' : 'alerts';
 			alerts = '<p class="xxsmall" style="text-align:center">' + nonOngoingCount + ' MBTA service ' + alertCountText + '</p>';
 
 			for( var i in mbtaAlerts ) {
@@ -1063,7 +1063,7 @@ jQuery(document).ready(function($) {
 		// Update the div itself
 		$('.mbta').updateWithText(alerts, 1000);
 		$('.luMBTA').updateWithText('mbta (' + nonOngoingCount + '/'
-		                                     + mbtaAlerts.length + ' ' + ((nonOngoingCount == 1) ? 'alert' : 'alerts') + '): '
+		                                     + mbtaAlerts.length + ' ' + ((mbtaAlerts.length == 1) ? 'alert' : 'alerts') + '): '
 		                                     + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
 		// Rearm the timer for 5 minutes
