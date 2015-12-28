@@ -31,7 +31,7 @@ a proxy.php that I modified from the [unofficial forecast.io Javascript library 
 - Added degree symbols to all temperatures.
 - Handle AJAX failurse by rearming the timers so that everything continues to update.  The mirror is pretty solid now, even if the site we're pulling data from goes down for a while.
 
-For more information, visit [my site at tmproductions.com](http://www.tmproductions.com/projects-blog/2015/8/29/magic-mirror) For more information on the original that inspired mine, visit [Michael's site](http://michaelteeuw.nl/tagged/magicmirror).
+For more information, visit [my site at tmproductions.com](http://www.tmproductions.com/projects-blog/2015/8/29/magic-mirror). For more information on the original that inspired mine, visit [Michael's site](http://michaelteeuw.nl/tagged/magicmirror).
 
 
 ## IMPORTANT INSTALLATION NOTE:
