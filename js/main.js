@@ -767,7 +767,8 @@ jQuery(document).ready(function($) {
 
 		// - Graph Drawing Functions - 
 		function updateWeatherForecast_DrawGraph_Sunlight( hourlyData ) {
-			// Draw two boxes representing sunlight over the next 48 hours.
+			// Draw two boxes representing daylight over the next 48 hours.
+			// The boxes span the time from sunrise to sunset
 			// - Create the boxes, if needed
 			if( tempGraphSVG.select( ".tempgraphDaylight" ).empty() ) {
 				for( var i=0; i < 3; i++ ) {
@@ -778,19 +779,19 @@ jQuery(document).ready(function($) {
 				}
 			}
 			
-			// - Update the x and widht of the boxes
+			// - Update the x and width of the boxes
 			tempGraphSVG.selectAll( ".tempgraphDaylight" )
 						.attr( "x", function(d,i) {
 							return Math.max( marginL, timeXScale( dailyData[i].sunriseTime ) );
 						})
 						.attr( "width", function(d,i) {
-							var	offset = 0.0;
 							var sunrise = timeXScale( dailyData[i].sunriseTime );
 
 							if( marginL > sunrise )
-								offset = marginL - sunrise;
+								sunrise = (sunrise > 0) ? marginL - sunrise : marginL;
 
-							return Math.max( timeXScale( dailyData[i].sunsetTime ) - sunrise - offset, 0 );		// max() works aorund a neagative width issue
+							var sunset = Math.max( marginL, timeXScale( dailyData[i].sunsetTime ) );
+							return sunset - sunrise;
 						})
 						.attr( "opacity", function(d,i) {
 							if( (timeXScale( dailyData[i].sunsetTime  ) <     marginL) ||
