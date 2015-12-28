@@ -29,7 +29,7 @@ a proxy.php that I modified from the [unofficial forecast.io Javascript library 
 - Added an extra delay to the RSS headlines based on the length of the headline (20ms per letter).
 - Color the current time orange -ish between 7:10 AM and 7:20 AM as a warning to get out of the house for the train.
 - Added degree symbols to all temperatures.
-- Handle AJAX failurse by rearming the timers so that everything continues to update.  The mirror is pretty solid now, even if the site we're pulling data from goes down for a while.
+- Handle AJAX failures by rearming the timers so that everything continues to update.  The mirror is pretty solid now, even if the site we're pulling data from goes down for a while.
 
 For more information, visit [my site at tmproductions.com](http://www.tmproductions.com/projects-blog/2015/8/29/magic-mirror). For more information on the original that inspired mine, visit [Michael's site](http://michaelteeuw.nl/tagged/magicmirror).
 
