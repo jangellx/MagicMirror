@@ -38,3 +38,8 @@ For more information, visit [my site at tmproductions.com](http://www.tmproducti
 To work around the fact that git wants to commit every single file in the dir, and doesn't have a decent
 way to avoid tracking specific previously-comitted files, js/config.js was renamed to js/config-REMOVE-THIS-.js.  Remove the
 -REMOVE_THIS- bit after you clone/sync and you should be all set.
+
+
+Screenshot of the latest version.
+
+![Magic Mirror screenshot](http://static1.squarespace.com/static/510dbdc1e4b037c811a42c5a/t/567f18e9c647adf832f21589/1451170026691/MagicMirrorExample.png)
