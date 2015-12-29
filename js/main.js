@@ -455,8 +455,8 @@ jQuery(document).ready(function($) {
 	// Get the weather via Dark Sky's API.  We get 1000 free updates a day,
 	//  so we only check once every 15 minutes.  That should be more than
 	//  frequent enough.  This updates the current conditions, forecast,
-	//  summary and graph in the same place so that we can use just one
-	//  JSON call.
+	//  summary, alerts and grapsh in the same place so that we can use just
+	//  one JSON call.
 	(function updateWeatherForecast()
 	{
 		$.getJSON('proxy.php?url=https://api.forecast.io/forecast/' + darkSkyAPIKey + '/' + darkSkyLat + ',' + darkSkyLon, function(json, textStatus) {
@@ -494,6 +494,10 @@ jQuery(document).ready(function($) {
 
 			$('.luWeather').updateWithText('weather: ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
+			// Update the alerts text
+// - Not really usable in a mirror context
+//			updateWeather_Alerts( json );
+
 			// Generate the graph
 			updateWeatherForecast_DrawGraph( json.daily.data, json.hourly.data );
 
@@ -505,6 +509,22 @@ jQuery(document).ready(function($) {
 			setTimeout(updateWeatherForecast, 300000);
 		});
 	})();
+
+	// Update the wearther alerts.
+	// - Really, this isn't worth it; the alerats are huge walls of text, sand don't fit well in the mirror.
+	function updateWeather_Alerts( json ) {
+		var weatherAlerts = "";
+		if( json.alerts.length > 0 ) {
+			var alertCountText = (json.alerts.length == 1) ? 'alert' : 'alerts';
+			weatherAlerts = '<p class="xxsmall" style="text-align:center">' + json.alerts.length + ' Weather Alerts ' + alertCountText + '</p>';
+		}
+
+		for( var i in json.alerts ) {
+			weatherAlerts += "<p><strong>" + json.alerts[i].title + "</strong><br>";
+			weatherAlerts += json.alerts[i].description;
+		}
+		$('.weatheralerts').updateWithText( weatherAlerts );
+	}
 
 	// Update the weekly forecast as a table of temperatures with an weather icon on each day
 	function updateWeatherForcast_UpdateWeeklyTable( json ) {
@@ -758,12 +778,11 @@ jQuery(document).ready(function($) {
 
 
 		// Draw each graph into the SVG
-		updateWeatherForecast_DrawGraph_Sunlight( dailyData );
-		updateWeatherForecast_DrawGraph_Rain( filteredHourlyData );
-		updateWeatherForecast_DrawGraph_Temp( filteredHourlyData );
-		updateWeatherForecast_DrawGraph_HourMarkers( filteredHourlyData );
-
-		updateWeatherForecast_DrawGraph_Rain( filteredHourlyData );
+		updateWeatherForecast_DrawGraph_Sunlight(     dailyData );
+		updateWeatherForecast_DrawGraph_Rain(         filteredHourlyData );
+		updateWeatherForecast_DrawGraph_Accumulation( filteredHourlyData );
+		updateWeatherForecast_DrawGraph_Temp(         filteredHourlyData );
+		updateWeatherForecast_DrawGraph_HourMarkers(  filteredHourlyData );
 
 		// - Graph Drawing Functions - 
 		function updateWeatherForecast_DrawGraph_Sunlight( hourlyData ) {
@@ -803,9 +822,7 @@ jQuery(document).ready(function($) {
 		}
 
 		function updateWeatherForecast_DrawGraph_Rain( hourlyData ) {
-			// Draw a filled line graph for the rain as a propability from 0 to 100% over time
-			//  Note that hourly data includes 48 hous worth, so we can it at 24.
-		
+			// Draw a filled line graph for the rain as a propability from 0 to 100% over time.
 			var rainYScale = d3.time.scale().domain([ 0.0, 1.0 ])
 											.range([ h, 0 ]);
 
@@ -823,8 +840,8 @@ jQuery(document).ready(function($) {
 			
 			// - Update the elements in the path
 			var s = tempGraphSVG.select( ".tempgraphRainArea" )
-						s.datum( hourlyData )
-						s.attr( "d", rainAreaValue );
+			s.datum( hourlyData )
+			s.attr( "d", rainAreaValue );
 
 			// Draw a line between the data points
 			var rainLineValue = d3.svg.line()
@@ -840,6 +857,74 @@ jQuery(document).ready(function($) {
 			// - Update the elements in the path
 			tempGraphSVG.select( ".tempgraphRainPath" )
 						.attr( "d", rainLineValue( hourlyData ));
+		}
+
+		function updateWeatherForecast_DrawGraph_Accumulation( hourlyData ) {
+			// Draw a filled line graph for the accumulated percipitation in inches, with 3'
+            // at the top of the graph.
+			var accumYScale = d3.time.scale().domain([ 0.0, 36.0 ])
+											 .range([ h, 0 ]);
+
+			// Draw a filled area under the line
+			var accumAreaValue = d3.svg.area()
+								   .x(  function(d){ return timeXScale( d.time ); })
+								   .y0( h )
+								   .y1( function(d){ return accumYScale( d.hasOwnProperty( "precipAccumulation" ? d.precipAccumulation : 0.0 ) ); });
+//								   .y1( function(d){ return accumYScale( d.hasOwnProperty( "precipProbability" ) ? d.precipProbability * 12 : 0.0 ); });
+
+			// - Create the path, if needed
+			if( tempGraphSVG.select( ".tempgraphAccumArea" ).empty() ) {
+				tempGraphSVG.append( "path" )
+							.attr(  "class", "tempgraphAccumArea" );
+			}
+			
+			// - Update the elements in the path
+			var s = tempGraphSVG.select( ".tempgraphAccumArea" )
+			s.datum( hourlyData )
+			s.attr( "d", accumAreaValue );
+
+			// Draw a line between the data points
+			var accumLineValue = d3.svg.line()
+								   .x( function(d){ return timeXScale( d.time ); })
+								   .y( function(d){ return accumYScale( d.hasOwnProperty( "precipAccumulation" ? d.precipAccumulation : 0.0 ) ); });
+//								   .y( function(d){ return accumYScale( d.hasOwnProperty( "precipProbability" ) ? d.precipProbability * 12 : 0.0 ); });
+
+			// - Create the path, if needed
+			if( tempGraphSVG.select( ".tempgraphAccumPath" ).empty() ) {
+				tempGraphSVG.append( "path" )
+							.attr(  "class", "tempgraphAccumPath" );
+			}
+
+			// - Update the elements in the path
+			tempGraphSVG.select( ".tempgraphAccumPath" )
+						.attr( "d", accumLineValue( hourlyData ));
+
+			// Draw a label for the high point in inches
+			var maxAccum = 0.0;
+			var maxTime   = 0.0;
+			for( var i in hourlyData ) {
+				if( hourlyData[i].precipAccumulation >maxAccum ) {
+//				if( hourlyData[i].precipProbability >maxAccum ) {
+					maxTime  = hourlyData[i].time;
+					maxAccum = hourlyData[i].precipAccumulation;
+//					maxAccum = hourlyData[i].precipProbability * 12.0;
+				}
+			}
+			
+			// - Create the text label, if needed
+			if( tempGraphSVG.select( ".tempgraphAccumText" ).empty() ) {
+				tempGraphSVG.append( "text" )
+							.attr(   "class",              "tempgraphAccumText" )
+							.attr(   "text-anchor",        "middle")
+							.attr(   "alignment-baseline", "hanging")
+			}
+
+			// - Update the label
+			tempGraphSVG.selectAll( ".tempgraphAccumText" )
+						.text(  Math.round( maxAccum ).toString() + '"' )
+						.attr(  "x", Math.max( 10, Math.min( w-10, timeXScale( maxTime ) ) ) )		// Constrained so the centered text fits the bounds of the graph
+						.attr(  "y", Math.max( 15, accumYScale( maxAccum ) ) )						// Adjusted so the top-aligned text doesn't fall off the bototm of the graph
+						.style( "fill-opacity", (maxAccum == 0.0) ? 0.0 : 1.0 );					// Hidden if there is no accumulation
 		}
 
 		function updateWeatherForecast_DrawGraph_Temp( hourlyData ) {

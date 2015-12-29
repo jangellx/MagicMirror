@@ -29,6 +29,7 @@
 		<!-- <div class="forecast small dimmed"></div>  Old table method; replaced with weekgraph SVG -->
 		<div class="weekgraph"></div>
 		<div class="summary xxsmall2 dimmed"></div>
+		<div class="weatheralerts xxsmall2 dimmed"></div>
 	</div>
 
 	<div class="farbottom right">

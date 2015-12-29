@@ -130,6 +130,26 @@ body, html {
 	stroke-width: 0;
 }
 
+.tempgraphAccumPath
+{
+    fill:           none;
+	stroke:         #FFF;
+	stroke-width:   1;
+	stroke-opacity: 75%;
+}
+
+.tempgraphAccumArea
+{
+    fill:         #CCC;
+	fill-opacity: 50%;
+	stroke-width: 0;
+}
+
+.tempgraphAccumText {
+    font-family: HelveticaNeue-Light;
+    font-size:   10px;
+    fill:        white;
+}
 
 /* Hot/Cold Lines */
 .tempGraphHotColdLine
@@ -350,9 +370,9 @@ body, html {
 
 /* -- Weather Summary -- */
 .summary {
-	width: 200px;
-	text-align: center;
-	float: right;
+	width:      200px;
+	text-align: justify;
+	float:      right;
 }
 
 .vspace {
