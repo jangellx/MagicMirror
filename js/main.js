@@ -236,16 +236,20 @@ jQuery(document).ready(function($) {
         }, 1000);
 	})();
 
-	// Holiday data comes from holidayapi.com.  We report the next holiday coming up after today,
+	// Holiday data comes from holidayapi.com.  We report the next holiday(s) coming up after today,
 	//  and if today is a holiday.
 	(function updateHolidays()
 	{
 		// The timer updates a once an hour, but we only need to refresh once a day.  We check to
 		//  see if the last time we updated on a different day; if not, we just rearm the timer.
+//		var today      = moment( "2015-12-31 12:20", "YYYY-MM-DD HH:MM" )	/// debugging stuff
+//		holidayThisDay = today.add( 1, "days" )
+//		if( holidayThisDay == today.day() ) {
+
 		if( holidayThisDay == moment().day() ) {
 			setTimeout(function() {
 				updateHolidays();
-			}, 3500000);
+				}, 3500000);
 
 			return;
 		}
@@ -285,6 +289,13 @@ jQuery(document).ready(function($) {
 
 					addHolidaysFromList( jsonDate2.holidays, false );
 					$('.holidays').updateWithText( holidayText, 1000 );
+					$('.luHolidays').updateWithText('holidays: ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
+
+					// Restart the timer in a bit under an hour.  We must do this here as well as below, as this
+					//  is an async sub-block
+					setTimeout(function() {
+						updateHolidays();
+					}, 3500000);
 
 				}).fail (function( jqxhr, textStatus, error ) {
 					// Failed; restart the timer for two minutes
@@ -296,10 +307,9 @@ jQuery(document).ready(function($) {
 			} else{
 				// We're done
 				$('.holidays').updateWithText( holidayText, 1000 );
-			}
+				$('.luHolidays').updateWithText('holidays: ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
-			if( numFound == holidaysShown) {
-				// Restart the timer in an hour
+				// Restart the timer in a bit under an hour
 				setTimeout(function() {
 					updateHolidays();
 				}, 3500000);

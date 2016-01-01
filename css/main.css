@@ -371,7 +371,7 @@ body, html {
 /* -- Weather Summary -- */
 .summary {
 	width:      200px;
-	text-align: justify;
+	text-align: center;
 	float:      right;
 }
 
