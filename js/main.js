@@ -249,12 +249,10 @@ jQuery(document).ready(function($) {
 		if( holidayThisDay == moment().day() ) {
 			setTimeout(function() {
 				updateHolidays();
-				}, 3500000);
+			}, 3500000);
 
 			return;
 		}
-
-		holidayThisDay = moment().day();
 
 		var now        = moment();
 		var holidayURL = 'http://holidayapi.com/v1/holidays?country=' + holidayCountry + '&year=';
@@ -293,6 +291,7 @@ jQuery(document).ready(function($) {
 
 					// Restart the timer in a bit under an hour.  We must do this here as well as below, as this
 					//  is an async sub-block
+					holidayThisDay = moment().day();
 					setTimeout(function() {
 						updateHolidays();
 					}, 3500000);
@@ -310,6 +309,7 @@ jQuery(document).ready(function($) {
 				$('.luHolidays').updateWithText('holidays: ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
 				// Restart the timer in a bit under an hour
+				holidayThisDay = moment().day();
 				setTimeout(function() {
 					updateHolidays();
 				}, 3500000);
