@@ -872,7 +872,7 @@ jQuery(document).ready(function($) {
 		function updateWeatherForecast_DrawGraph_Accumulation( hourlyData ) {
 			// Draw a filled line graph for the accumulated percipitation in inches, with 3'
             // at the top of the graph.
-			var accumYScale = d3.time.scale().domain([ 0.0, 36.0 ])
+			var accumYScale = d3.time.scale().domain([ 0.0, 12.0 ])
 											 .range([ h, 0 ]);
 
 			// Draw a filled area under the line
