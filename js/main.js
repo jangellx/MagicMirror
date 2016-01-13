@@ -594,9 +594,9 @@ jQuery(document).ready(function($) {
 		}
 
 		// Set up the scale for the temps
-		var tempXScale = d3.time.scale().domain([ d3.min( filteredDays, function(d) { return d.temperatureMin } ),
-												  d3.max( filteredDays, function(d) { return d.temperatureMax } ) ])
-										.range([ marginL, w - marginR ]);
+		var tempXScale = d3.scale.linear().domain([ d3.min( filteredDays, function(d) { return d.temperatureMin } ),
+												    d3.max( filteredDays, function(d) { return d.temperatureMax } ) ])
+										  .range([ marginL, w - marginR ]);
 
 		// Add the freezing and hot lines
 		updateWeatherForcast_UpdateWeeklyGraph_HotColdLine( 32, "freezeLine", "\uf076",  0 )			// f076 is wi-snowflake-cold
@@ -833,8 +833,8 @@ jQuery(document).ready(function($) {
 
 		function updateWeatherForecast_DrawGraph_Rain( hourlyData ) {
 			// Draw a filled line graph for the rain as a propability from 0 to 100% over time.
-			var rainYScale = d3.time.scale().domain([ 0.0, 1.0 ])
-											.range([ h, 0 ]);
+			var rainYScale = d3.scale.linear().domain([ 0.0, 1.0 ])
+											  .range([ h, 0 ]);
 
 			// Draw a filled area under the line
 			var rainAreaValue = d3.svg.area()
@@ -872,14 +872,14 @@ jQuery(document).ready(function($) {
 		function updateWeatherForecast_DrawGraph_Accumulation( hourlyData ) {
 			// Draw a filled line graph for the accumulated percipitation in inches, with 3'
             // at the top of the graph.
-			var accumYScale = d3.time.scale().domain([ 0.0, 12.0 ])
-											 .range([ h, 0 ]);
+			var accumYScale = d3.scale.linear().domain([ 0.0, 0.2, 12.0 ])
+											   .range([ h, h-10, 0 ]);
 
 			// Draw a filled area under the line
 			var accumAreaValue = d3.svg.area()
 								   .x(  function(d){ return timeXScale( d.time ); })
 								   .y0( h )
-								   .y1( function(d){ return accumYScale( d.hasOwnProperty( "precipAccumulation" ? d.precipAccumulation : 0.0 ) ); });
+								   .y1( function(d){ return accumYScale( d.hasOwnProperty( "precipAccumulation" ) ? d.precipAccumulation : 0.0 ); });
 //								   .y1( function(d){ return accumYScale( d.hasOwnProperty( "precipProbability" ) ? d.precipProbability * 12 : 0.0 ); });
 
 			// - Create the path, if needed
@@ -896,7 +896,7 @@ jQuery(document).ready(function($) {
 			// Draw a line between the data points
 			var accumLineValue = d3.svg.line()
 								   .x( function(d){ return timeXScale( d.time ); })
-								   .y( function(d){ return accumYScale( d.hasOwnProperty( "precipAccumulation" ? d.precipAccumulation : 0.0 ) ); });
+								   .y( function(d){ return accumYScale( d.hasOwnProperty( "precipAccumulation" ) ? d.precipAccumulation : 0.0 ); });
 //								   .y( function(d){ return accumYScale( d.hasOwnProperty( "precipProbability" ) ? d.precipProbability * 12 : 0.0 ); });
 
 			// - Create the path, if needed
@@ -941,9 +941,9 @@ jQuery(document).ready(function($) {
 			// Create dots for the temp, scaling to limit the min/max temps to the bounds of the view
 			//  Note that hourly data includes 48 hous worth, not 24.  We only draw 12 dots to keep
 			//  things from getting too cluttered, but graph 24.
-			var tempYScale = d3.time.scale().domain([ d3.min( hourlyData, function(d) { return d.temperature } ),
-													  d3.max( hourlyData, function(d) { return d.temperature } ) ])
-											.range([ h-marginB, marginT ]);
+			var tempYScale = d3.scale.linear().domain([ d3.min( hourlyData, function(d) { return d.temperature } ),
+													    d3.max( hourlyData, function(d) { return d.temperature } ) ])
+											  .range([ h-marginB, marginT ]);
 
 			// Draw a line between the dots
 			var tempLineValue = d3.svg.line()
