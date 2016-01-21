@@ -18,6 +18,9 @@ var tempGraphRangeOfHours = 30;
 // Country code for holidays, as per holidayapi.com
 var holidayCountry = "US";
 
+// Total number of holidays to display
+var holidaysShown  = 3;
+
 // Holiday filter
 //  Add dates you don't want to see in the fomat of "MM-DD".  This can
 //  also be a string matching one of the holiday names.
