@@ -33,8 +33,11 @@ a proxy.php that I modified from the [unofficial forecast.io Javascript library 
 
 For more information, visit [my site at tmproductions.com](http://www.tmproductions.com/projects-blog/2015/8/29/magic-mirror). For more information on the original that inspired mine, visit [Michael's site](http://michaelteeuw.nl/tagged/magicmirror).
 
+# Experimental Features
+## Weather Station Mode
+For those who don't actually plan on overlying this with a mirror, there is a "weather station mode".  In the config file there is weatherBGImages, which is a dictionary of arrays of URLs to use for the background image, with each dictionary key reqpresenting a different weather condition.  These arrays are empty by default, and the background is simply black.  However, you can add one or more images to each array, and an image from the array assocaited with the current weather will be displaeyd as the background of the page.  If more than one image is provided, they will be randomly switched between at the interval specified.  Since images can make it hard to read the interface, a tint level can also be set to make the images darker and the interface easier to read.
 
-## IMPORTANT INSTALLATION NOTE:
+# IMPORTANT INSTALLATION NOTE:
 To work around the fact that git wants to commit every single file in the dir, and doesn't have a decent
 way to avoid tracking specific previously-comitted files, js/config.js was renamed to js/config-REMOVE-THIS-.js.  Remove the
 -REMOVE_THIS- bit after you clone/sync and you should be all set.
