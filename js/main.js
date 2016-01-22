@@ -60,6 +60,8 @@ jQuery(document).ready(function($) {
 	var tempGraphSVG;							// SVG used to draw the temp/rain graph into
 	var weekGraphSVG;							// SVG used to draw the weekly forecast graph into
 
+    var curWeatherIcon = "(none)";				// The code for the current weather icon as a string
+
 	moment.locale(lang, {						// Language localization
 		calendar : {							// Calendar localization used for upcoming holidays.  Should really be localized too...
 			lastDay : '[Yesterday was] ' ,
@@ -70,6 +72,12 @@ jQuery(document).ready(function($) {
 			nextWeek : 'dddd [is] ',
 			sameElse : 'MM/DD [is] '
 		}
+	});
+
+
+	// Set the background image tint amount
+	$('.backgroundTint').css('opacity', function () {
+		return weatherBGTint;
 	});
 
 	//connect do Xbee monitor
@@ -462,6 +470,27 @@ jQuery(document).ready(function($) {
 
 	})();
 
+	// Update the background image based on curWeatherIcon
+	//  Implementation inspired from from http://stackoverflow.com/questions/20255903/change-the-body-background-image-with-fade-effect-in-jquery
+	function updateBackground()
+	{
+		if( curWeatherIcon in weatherBGImages ) {
+			var bgImages = weatherBGImages[curWeatherIcon];
+			if( bgImages.length > 0 ) {
+				var index = Math.floor(Math.random() * 10) % bgImages.length;
+
+				$('body').css('backgroundImage', function () {
+					return 'url(' + bgImages[index] + ')';
+				});
+
+			}
+		}
+
+		setTimeout( updateBackground, weatherVGCycleInterval * 1000 );
+    }
+	
+	updateBackground();
+
 	// Get the weather via Dark Sky's API.  We get 1000 free updates a day,
 	//  so we only check once every 15 minutes.  That should be more than
 	//  frequent enough.  This updates the current conditions, forecast,
@@ -475,6 +504,7 @@ jQuery(document).ready(function($) {
 			var temp       = roundVal(current.temperature);
 			var wind       = roundVal(current.wind);
 
+			curWeatherIcon = current.icon;							// Stored for use by weather-related background images
 			var iconClass  = "wi-forecast-io-" + current.icon;
 			var icon       = $('<span/>').addClass('icon').addClass('dimmed').addClass('wi').addClass(iconClass);
 			$('.temp').updateWithText( icon.outerHTML() + temp + '&deg;', 1000 );
@@ -513,6 +543,9 @@ jQuery(document).ready(function($) {
 
 			// Update in 15 minutes
 			setTimeout(updateWeatherForecast, 900000);
+
+			// Update the background iamge
+			updateBackground();
 
 		}).fail( function() {
 			// JSON call failed; re-arm the timer for 5 minutes
@@ -827,7 +860,7 @@ jQuery(document).ready(function($) {
 							    (timeXScale( dailyData[i].sunriseTime ) > w - marginR) )
 								return 0.0;
 							else
-								return 1.0;
+								return 0.15;
 						});
 		}
 

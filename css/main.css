@@ -5,12 +5,31 @@ body, html {
 	width:100%;
 	height: 100%;
 
+	position: relative;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-attachment: fixed;
 
 	font-family: "HelveticaNeue-Light";
 	letter-spacing: -0px;
 	color: #fff;
 	font-size: 75px;
-	 -webkit-font-smoothing: antialiased;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* -- Background Image Tint Layer -- */
+.backgroundTint {
+    background-color: #000;
+	opacity: 0.25;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    -webkit-transition: opacity 1s eas-in-out;
+	transition: opacity 1s eas-in-out;
 }
 
 /* -- Margins and Basic Structure -- */
@@ -86,7 +105,7 @@ body, html {
 
 .tempgraphDaylight
 {
-	fill:         #222;
+	fill:         #FFF;
 }
 
 .tempgraphTempMark

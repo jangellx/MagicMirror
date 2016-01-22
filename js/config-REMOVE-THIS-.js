@@ -61,3 +61,51 @@ var evening = [
             'You look nice!',
             'Hi, sexy!'
         ];
+
+
+// -- Experimental --
+// Weather background images.  You'll usually want to leave this
+//  commented out for a mirror, but it can be useful if you want
+//  to use it as a weather station.
+// Background images are a dictionary of arrays.  The dictionary
+//  is the weather icon code, while the array is a list of images
+//  that will be randomly chosen or cycled through based.
+// To use:  Uncommoent the weatherBGImages, and set the image URLs
+//  to something useful.  You can have as many or as few images
+//  as you like, but you must have at least one image per entry.
+
+var weatherBGImages = { "clear-day"           : [],
+						"clear-night"         : [],
+						"rain"                : [],
+						"snow"                : [],
+						"sleet"               : [],
+						"wind"                : [],
+						"partly-cloudy-day"   : [],
+						"fog"                 : [],
+						"cloudy"              : [],
+						"partly-cloudy-night" : [],
+						"hail"                : [],
+						"thunderstorm"        : [],
+						"tornado"             : [] };
+
+/* This commented-out block is an example of how this might look
+var weatherBGImages = { "clear-day"           : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"clear-night"         : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"rain"                : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"snow"                : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"sleet"               : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"wind"                : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"partly-cloudy-day"   : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"fog"                 : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"cloudy"              : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"partly-cloudy-night" : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"hail"                : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"thunderstorm"        : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"],
+						"tornado"             : ["http://www.someURL.com/image1.jpg", "http://www.someURL.com/image2.jpg"] };
+*/
+
+// Background image tint color.  The higher the value, the dark the image, but the more readable the text is.
+var weatherBGTint = 0.75;
+
+// Number of seconds to cycle through the iamges for a given weather entry.
+var weatherVGCycleInterval = 60;

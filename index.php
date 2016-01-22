@@ -14,6 +14,8 @@
 </head>
 <body>
 
+    <div class="backgroundTint"></div>
+
 	<div class="top left">
 		<div class="date small dimmed"></div>
 		<div class="time"></div>
