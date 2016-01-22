@@ -967,7 +967,7 @@ jQuery(document).ready(function($) {
 						.text(  Math.round( maxAccum ).toString() + '"' )
 						.attr(  "x", Math.max( 10, Math.min( w-10, timeXScale( maxTime ) ) ) )		// Constrained so the centered text fits the bounds of the graph
 						.attr(  "y", Math.max( 15, accumYScale( maxAccum ) ) )						// Adjusted so the top-aligned text doesn't fall off the bototm of the graph
-						.style( "fill-opacity", (maxAccum == 0.0) ? 0.0 : 1.0 );					// Hidden if there is no accumulation
+						.style( "fill-opacity", (Math.floor(maxAccum) == 0.0) ? 0.0 : 1.0 );					// Hidden if there is no accumulation
 		}
 
 		function updateWeatherForecast_DrawGraph_Temp( hourlyData ) {
