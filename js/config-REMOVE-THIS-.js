@@ -43,7 +43,7 @@ var holidaysCustom = [
 // RSS Feed here
 var feed = 'http://www.wbur.org/feed'
 
-// compliments:
+// Time of Day Compliments
 var morning = [
             'Good morning!',
             'Enjoy your day!',
@@ -62,6 +62,32 @@ var evening = [
             'Hi, sexy!'
         ];
 
+// Weather "Compliments"
+//  These are phrases that are mixed with the time-of-day compliments based on
+//  the current weather conditions (rain, snow, etc).
+var weatherCompliments = { "clear-day"           : ["Bright and sunny today!", "Clear skies ahead!"],
+						   "clear-night"         : ["You can see the stars tonight!"],
+						   "rain"                : ["Might want an umbrella!", "Better bring your raincoat!", "Stay dry today!"],
+						   "snow"                : ["Build a snowman!", "Snowball fight!", "Catch some snowflakes!"],
+						   "sleet"               : ["It's a bit messy out there!"],
+						   "wind"                : ["Don't get blown away!"],
+						   "partly-cloudy-day"   : ["A little gray out today!"],
+						   "fog"                 : ["Don't get lost in the fog!"],
+						   "cloudy"              : ["It's looking grey out today!"],
+						   "partly-cloudy-night" : ["No stargazing tonight!"],
+						   "hail"                : ["Watch out for ice from the sky!"],
+						   "thunderstorm"        : ["Lightning and thunder!"],
+						   "tornado"             : ["And your little dog, too!"] };
+
+// Temperature "Compliments"
+//  These are mixed with the weather and time-of-day compliments based on
+//  a temperature range.  The array is walked from the highest temperatures
+//  to the lowest until a match is found for average temperature over the
+//  next 12 hours.
+var temperatureCompliments = [ {low:  83, messages:["Hot one today!", "Try to keep cool!"] },
+                               {low:  60, messages:["It's warm out today!"] },
+						       {low:  33, messages:["Don't forget a jacket!"] },
+						       {low: -50, messages:["Bundle up today!", "Stay warm!"] } ];
 
 // -- Experimental --
 // Weather background images.  You'll usually want to leave this

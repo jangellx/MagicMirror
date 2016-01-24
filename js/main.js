@@ -60,7 +60,8 @@ jQuery(document).ready(function($) {
 	var tempGraphSVG;							// SVG used to draw the temp/rain graph into
 	var weekGraphSVG;							// SVG used to draw the weekly forecast graph into
 
-    var curWeatherIcon = "(none)";				// The code for the current weather icon as a string
+    var curWeatherIcon = "(none)";				// The code for the current weather icon as a string.  Used by compliments and background images
+	var dailyAverageTemp = 0;					// The average temperature over the next 12 hours.  Used by compliments.
 
 	moment.locale(lang, {						// Language localization
 		calendar : {							// Calendar localization used for upcoming holidays.  Should really be localized too...
@@ -445,18 +446,30 @@ jQuery(document).ready(function($) {
 
 	(function updateCompliment()
 	{
-        //see compliments.js
 		while (compliment == lastCompliment) {
-			//Check for current time  
+			// Check for current time  
 			var compliments;
 			var date = new Date();
 			var hour = date.getHours();
 
-			//set compliments to use
-			if (hour >= 3 && hour < 12) compliments  = morning;
+			// Set compliments to use based on the current time
+			if (hour >=  3 && hour < 12) compliments = morning;
 			if (hour >= 12 && hour < 17) compliments = afternoon;
-			if (hour >= 17 || hour < 3) compliments  = evening;
+			if (hour >= 17 || hour <  3) compliments = evening;
 
+			// Look for compliments matching the current weather
+			if( curWeatherIcon in weatherCompliments )
+				compliments = compliments.concat( weatherCompliments[ curWeatherIcon ] );
+
+			// Look for compliments associated with the average temperature for the day
+			for( var i=0; i < temperatureCompliments.length; i++ ) {
+				if( temperatureCompliments[i].low < dailyAverageTemp ) {
+					compliments = compliments.concat( temperatureCompliments[i].messages );
+					break;
+				}
+			}
+
+			// Choose one
 			compliment = Math.floor(Math.random()*compliments.length);
 		}
 
@@ -533,6 +546,13 @@ jQuery(document).ready(function($) {
 			                             '<span class="xxxsmall xxdimmed">last updated: ' + moment().format('h:mm a ddd MMM D YYYY') + '</span>'*/, 1000);
 
 			$('.luWeather').updateWithText('weather: ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
+
+			// Compute the average temperature for the next 12 hours
+			dailyAverageTemp = 0;
+			for( var i=0; i < 12; i++ ) {
+				dailyAverageTemp += json.hourly.data[i].temperature;
+			}
+			dailyAverageTemp /= 12;
 
 			// Update the alerts text
 // - Not really usable in a mirror context
