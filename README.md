@@ -24,6 +24,7 @@ a proxy.php that I modified from the [unofficial forecast.io Javascript library 
 - Added MBTA alerts from the [http://realtime.mbta.com/](MBTA Realtime API).  Thos agaom reqiores getting your own key (easy to do) from the [http://realtime.mbta.com/Portal/Account/Register](MBTA developer site) and setting it and the route you want alerts for in config.js.  Only current alerts are shown, with minor alerts shown with white icons instead of red.  You get 10000 requests a day, so I update every five minutes.  This uses the smae proxy.php as the forecast.io implementation above due to issues I had getting JSONP to work.
 - Added holidays via [http://holidayapi.com/](HolidayAPI), augmenting it with filters and custom holidays
 (which draw in gold), both of which are set through the config.
+- Customizable weather-based "compliments" based on the current weather and the average temperature over the next 12 hours.
 - Removed the fractional temperatures.
 - Added daily and weekly summary text from forecast.io.
 - Added an extra delay to the RSS headlines based on the length of the headline (20ms per letter).
