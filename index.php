@@ -50,6 +50,7 @@
 	</div>
 
 	<div class="bottom center-hor">
+		<div class="newsTitle xsmall xxdimmed"></div>
 		<div class="news medium"></div>
 	</div>
 

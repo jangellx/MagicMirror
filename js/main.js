@@ -1,3 +1,18 @@
+jQuery.fn.updateWithTextForce = function(text, speed, force)
+{
+	var dummy = $('<div/>').html(text);
+
+	if (force || ($(this).html() != dummy.html()))
+	{
+		$(this).fadeOut(speed/2, function() {
+			$(this).html(text);
+			$(this).fadeIn(speed/2, function() {
+				//done
+			});
+		});
+	}
+}
+
 jQuery.fn.updateWithText = function(text, speed)
 {
 	var dummy = $('<div/>').html(text);
@@ -43,13 +58,27 @@ function shadeColor2(color, percent) {
 }
 
 // Globals accessed from other modules
-var curWeatherIcon = "(none)";				// The code for the current weather icon as a string.  Used by compliments and background images
-var dailyAverageTemp = 0;					// The average temperature over the next 12 hours.  Used by compliments.
+var curWeatherIcon = "(none)";					// The code for the current weather icon as a string.  Used by compliments and background images
+var dailyAverageTemp = 0;						// The average temperature over the next 12 hours.  Used by compliments.
+
+	// Test for missing feedURLs, but a valid feeds
+	if( typeof feedURLs == 'undefined') {
+		if( typeof feed == 'undefined' )
+			var feedURLs;
+		else
+			var feedURLs = {"News" : feed};
+	}
 
 jQuery(document).ready(function($) {
 
-	var news = [];
-	var newsIndex = 0;
+	var news = [];								// Dictionary of arrays of news stories.  Outer arry indices match the feedURLs[] dictionary indices
+	var newsFeedIndex  = 0;						// Index of the feed we're showing stories from in the news[] arary
+	var newsStoryIndex = 0;						// Index of the story we're showing in news[ newsFeedIndex ][]
+
+	// Add empty arrays for each news feed, which we will later populate from JSON data
+	for( var key in feedURLs ) {
+		news.push( new Array(0) );
+	}
 
 	var eventList = [];
 
@@ -482,13 +511,28 @@ jQuery(document).ready(function($) {
 	})();
 
 	// RSS Feed Display.  Updates every 5 minutes.
-	(function fetchNews() {
+	function fetchNews() {
 		// Yahoow Query Language implementation borrowed from jquery.feedToJSON.js by dboz@airshp.com
 		var yqlURL      = 'http://query.yahooapis.com/v1/public/yql';                            // yql itself
 		var yqlQS       = '?format=json&callback=?&q=select%20*%20from%20rss%20where%20url%3D';  // yql query string
 		var cachebuster = new Date().getTime();   							                     // yql caches feeds, so we change the feed url each time
+		var index       = 0;
 
-		var url = yqlURL + yqlQS + "'" + encodeURIComponent(feed) + "'" + "&_nocache=" + cachebuster;
+		// Loop through the feed URLs
+		for( var key in feedURLs ) {
+			var url = yqlURL + yqlQS + "'" + encodeURIComponent( feedURLs[key] ) + "'" + "&_nocache=" + cachebuster;
+
+			fetchNewsForURL( index++, url );
+		}
+
+	};
+
+	fetchNews();
+
+	// Actually get a feed.  The function exists just so we can fake passing
+	//  extra arguments to getJSON().
+	function fetchNewsForURL( index, url )
+	{
 		$.getJSON( url, function(jsonRSS, textStatus) {
 			// Success; cache the feed titles
 			if( jsonRSS.query.results == null ) {
@@ -497,12 +541,19 @@ jQuery(document).ready(function($) {
 
 			} else {
 				// Success; get the list of articles
-				news.length = 0;
-
+				var stories = [];
 				for (var i in jsonRSS.query.results.item)
-					news.push( jsonRSS.query.results.item[i].title );
+					stories.push( jsonRSS.query.results.item[i].title );
 
-				$('.luRSS').updateWithText('rss (' + news.length + ' articles): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
+				news[ index ] = stories;
+
+				// Update the "last updated" information with a count of all stories from all feeds
+				var newsCountTotal = 0;
+				for( var i=0; i < news.length; i++ ) {
+					newsCountTotal += news[i].length;
+				}
+
+				$('.luRSS').updateWithText('rss (' + newsCountTotal + ' articles/' + news.length + ' feeds): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
 				// Update in 5 minutes
 				setTimeout( fetchNews, 300000 );
@@ -512,19 +563,70 @@ jQuery(document).ready(function($) {
 			// Error; re-arm the timer for 2 minutes
 			setTimeout( fetchNews, 120000 );
 		});
-	})();
+	}
 
 	(function showNews() {
-		var newsItem   = news[newsIndex];
-		var newsLength = (newsItem === undefined) ? 0 : newsItem.length;
+		var initialFeed = newsFeedIndex;
 
-		$('.news').updateWithText(newsItem,2000);
+		if( news.length == 0 ) {
+			// No news; nothing to do
+			return;
+		}
 
-		newsIndex--;
-		if (newsIndex < 0)
-			newsIndex = news.length - 1;
+		// Find the next story
+		for( var i=0; i < news.length+1; i++ ) {
+			var newsFeed = news[ newsFeedIndex ];
 
-		setTimeout( showNews, 5500 + (newsLength * 20));			// Length of the headline modifies how long it stays on screen
+			// Fix undefined entries
+			if( newsFeed === undefined )
+				continue;
+
+			// Skip empty feeds
+			if( newsFeed.length == 0 ) {
+				if( ++newsFeedIndex == news.length )
+					newsFeedIndex = 0;
+
+				newsStoryIndex = 0;
+				continue;
+			}
+
+			// Check for the last story in the feed
+			if( newsFeed.length == newsStoryIndex ) {
+				newsStoryIndex = 0;
+
+				if( ++newsFeedIndex == news.length ) {
+					newsFeedIndex = 0;
+					continue;
+				}
+			}
+		}
+
+		if( news[ newsFeedIndex ].length == 0 ) {
+			// No stories 
+			setTimeout( showNews, 1000 );
+			return;
+		}
+
+		// Get the title text
+		var i = 0;
+		for( var key in feedURLs ) {
+			if( i == newsFeedIndex )
+				break;
+
+			i++;
+		}
+
+		$('.newsTitle').updateWithTextForce(key + '<hr width="20%" style="opacity:0.3">', 2000, true);
+
+		// Get the story text
+		var newsFeed = news[ newsFeedIndex ];
+		newsStory = newsFeed[ newsStoryIndex ];
+
+		$('.news').updateWithText(newsStory,2000);
+
+		// Set up for the next story
+		newsStoryIndex++;
+		setTimeout( showNews, 5500 + (newsStory.length * 20) );			// Length of the headline modifies how long it stays on screen
 	})();
 
 });

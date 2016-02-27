@@ -40,8 +40,17 @@ var holidaysCustom = [
 //			{ date: '01-02', name: 'Day After New Years' },
 ];
 
-// RSS Feed here
-var feed = 'http://www.wbur.org/feed'
+// RSS Feeds
+//
+//  Old style supporting a single feed.
+// var feed = 'http://www.wbur.org/feed'
+//
+// New Style supporting multiple feeds via a dictionary.  The key is displayed above the headline.
+var feedURLs = {'World'      : 'http://feeds.reuters.com/Reuters/worldNews',		// Reuters World
+				'US'         : 'http://feeds.reuters.com/Reuters/domesticNews',		// Reuters US
+				'Politics'   : 'http://feeds.reuters.com/Reuters/PoliticsNews',		// Reuters Politics
+				'Technology' : 'http://feeds.reuters.com/Reuters/technologyNews',	// Reuters Technology
+				'Science'    : 'http://feeds.reuters.com/reuters/scienceNews' };	// Reuters Science
 
 // Time of Day Compliments
 var morning = [
