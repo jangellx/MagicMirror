@@ -61,13 +61,18 @@ function shadeColor2(color, percent) {
 var curWeatherIcon = "(none)";					// The code for the current weather icon as a string.  Used by compliments and background images
 var dailyAverageTemp = 0;						// The average temperature over the next 12 hours.  Used by compliments.
 
-	// Test for missing feedURLs, but a valid feeds
-	if( typeof feedURLs == 'undefined') {
-		if( typeof feed == 'undefined' )
-			var feedURLs;
-		else
-			var feedURLs = {"News" : feed};
-	}
+// Test for missing feedURLs, but a valid feeds
+if( typeof feedURLs == 'undefined') {
+	if( typeof feed == 'undefined' )
+		var feedURLs;
+	else
+		var feedURLs = {"News" : feed};
+}
+
+// Test for missing mixCompliments variable, setting it to true if missing
+if( typeof mixCompliments == 'undefined') {
+	var mixCompliments = true;
+}
 
 jQuery(document).ready(function($) {
 
@@ -476,6 +481,7 @@ jQuery(document).ready(function($) {
 		while (compliment == lastCompliment) {
 			// Check for current time  
 			var compliments;
+			var wtCompliments = [];
 			var date = new Date();
 			var hour = date.getHours();
 
@@ -486,21 +492,31 @@ jQuery(document).ready(function($) {
 
 			// Look for compliments matching the current weather
 			if( curWeatherIcon in weatherCompliments )
-				compliments = compliments.concat( weatherCompliments[ curWeatherIcon ] );
+				wtCompliments = wtCompliments.concat( weatherCompliments[ curWeatherIcon ] );
 
 			// Look for compliments associated with the average temperature for the day
 			for( var i=0; i < temperatureCompliments.length; i++ ) {
 				if( temperatureCompliments[i].low < dailyAverageTemp ) {
-					compliments = compliments.concat( temperatureCompliments[i].messages );
+					wtCompliments = wtCompliments.concat( temperatureCompliments[i].messages );
 					break;
 				}
 			}
 
-			// Choose one
-			compliment = Math.floor(Math.random()*compliments.length);
+			if( mixCompliments ) {
+				// Mixed; add the arrays
+				compliments = compliments.concat( wtCompliments );
+			} else {
+				// Not mixed; choose a weather compliments
+				wtCompliment = wtCompliments[ Math.floor(Math.random()*wtCompliments.length) ];
+			}
+
+			// Choose a normal (or mixed) compliment
+			compliment = compliments[ Math.floor(Math.random()*compliments.length) ];
 		}
 
-		$('.compliment').updateWithText(compliments[compliment], 4000);
+		$('.compliment').updateWithText(compliment, 4000);
+		if( !mixCompliments )
+			$('.weatherCompliment').updateWithText(wtCompliment, 4000);
 
 		lastCompliment = compliment;
 

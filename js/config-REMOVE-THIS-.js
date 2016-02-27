@@ -71,6 +71,12 @@ var evening = [
             'Hi, sexy!'
         ];
 
+// -- Experimental --
+// Mixed vs. Stacked Compliments
+//  if this is true, the weather complements are mixed with the standard complements.  If false,
+//  the weather compliments are shown in smaller text under the standard compliments.
+var mixCompliments = true;
+
 // Weather "Compliments"
 //  These are phrases that are mixed with the time-of-day compliments based on
 //  the current weather conditions (rain, snow, etc).

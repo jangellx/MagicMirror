@@ -47,6 +47,7 @@
 
 	<div class="lower-third center-hor">
 		<div class="compliment light"></div>
+		<div class="weatherCompliment small light"></div>
 	</div>
 
 	<div class="bottom center-hor">
