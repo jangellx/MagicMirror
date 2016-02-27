@@ -55,14 +55,19 @@
 
 </div>
 
+<!-- Third Parties -->
 <script src="js/jquery.js"></script>
 <script src="js/ical_parser.js"></script>
 <script src="js/moment-with-locales.js"></script>
 <script src="js/config.js"></script>
 <script src="js/rrule.js"></script>
 <script src="js/d3.js"></script>
-<script src="js/main.js?nocache=<?php echo md5(microtime()) ?>"></script>
 <!-- <script src="js/socket.io.min.js"></script> -->
+
+<!-- Our Stuff -->
+<script src="js/main.js?nocache=<?php echo md5(microtime()) ?>"></script>
+<script src="js/mm-weather.js?nocache=<?php echo md5(microtime()) ?>"></script>
+<script src="js/mm-mbta.js?nocache=<?php echo md5(microtime()) ?>"></script>
 
 </body>
 </html>
