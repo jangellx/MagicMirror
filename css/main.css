@@ -108,6 +108,13 @@ body, html {
 	fill:         #FFF;
 }
 
+.tempgraphFeelsLikeBar
+{
+	fill:         red;
+	fill-opacity: 40%;
+    stroke:       none;
+}
+
 .tempgraphTempMark
 {
 	fill:         red;
@@ -303,6 +310,11 @@ body, html {
 	line-height: 35px;
 }
 
+.light
+{
+	font-family: "HelveticaNeue-UltraLight";
+}
+
 /* -- Dimming -- */
 .xxdimmed
 {
@@ -318,12 +330,6 @@ body, html {
 {
 	color: #aaa;
 }
-
-.light
-{
-	font-family: "HelveticaNeue-UltraLight";
-}
-
 
 /* -- Weather Icons -- */
 .wi {

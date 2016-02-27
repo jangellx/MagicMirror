@@ -494,9 +494,40 @@ function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 		// Create dots for the temp, scaling to limit the min/max temps to the bounds of the view
 		//  Note that hourly data includes 48 hous worth, not 24.  We only draw 12 dots to keep
 		//  things from getting too cluttered, but graph 24.
-		var tempYScale = d3.scale.linear().domain([ d3.min( hourlyData, function(d) { return d.temperature } ),
-													d3.max( hourlyData, function(d) { return d.temperature } ) ])
+		var tempYScale = d3.scale.linear().domain([ d3.min( hourlyData, function(d) { return Math.min( d.temperature, d.apparentTemperature ) } ),
+													d3.max( hourlyData, function(d) { return Math.max( d.temperature, d.apparentTemperature ) } ) ])
 										  .range([ h-marginB, marginT ]);
+
+		// Draw lines from the apparent "feels like" temperature to the actual temperature
+		// - Add rectanges for each line
+		tempGraphSVG.selectAll( ".tempgraphFeelsLikeBar" )
+					.data( hourlyData.filter( function(d, i) {
+						return (i % 2) == 0;													// Every second element
+					}) )
+					.enter()
+					.append( "rect" )
+					.attr(   "class", "tempgraphFeelsLikeBar" )
+					.attr(   "ry",      2 )
+					.attr(   "rx",      2 )
+					.attr(   "width",   3 );
+
+		// - Update the top and bottom edges of the rect
+		tempGraphSVG.selectAll( ".tempgraphFeelsLikeBar" )
+					.attr( "x",     function(d,i) { 
+						return timeXScale( d.time ) - 2;
+					})
+					.attr( "y",  function(d,i) { 
+						if( d.temperature < d.apparentTemperature )
+							return tempYScale( d.apparentTemperature );
+						else
+							return tempYScale( d.temperature );
+					})
+					.attr( "height",  function(d,i) {
+						if( d.temperature < d.apparentTemperature )
+							return tempYScale( d.temperature ) - tempYScale( d.apparentTemperature );
+						else
+							return tempYScale( d.apparentTemperature ) - tempYScale( d.temperature );
+					});
 
 		// Draw a line between the dots
 		var tempLineValue = d3.svg.line()
