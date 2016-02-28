@@ -40,6 +40,15 @@ var holidaysCustom = [
 //			{ date: '01-02', name: 'Day After New Years' },
 ];
 
+// Warning Times
+//  Adding times, colors and messages to this array will cause the
+//  current time to change color and display the message underneath.
+//  It can be useful as a warning to let you know that it's time for you
+//  to leave before you miss the train, for example.  The time format is
+//  "HH:MM" with HH between 0-23 and MM between 0 and 59.
+var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", message:"Leave soon to catch the train" },
+                     { startTime:"17:50", endTime:"18:00", color:"FFA500", message:"Leave soon for the train"      } ];
+
 // RSS Feeds
 //
 //  Old style supporting a single feed.

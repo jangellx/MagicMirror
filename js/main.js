@@ -143,16 +143,39 @@ jQuery(document).ready(function($) {
 
 	(function updateTime()
 	{
-		var now  = moment();
-        var date = now.format('dddd, MMMM Do, YYYY');
+		var now     = moment();
+        var date    = now.format('dddd, MMMM Do, YYYY');
+		var color   = $('.time .warning').css('color');
+		var message = "";
 
-		var isWarningTime = (now.hour() == 7) && (now.minute() >= 10) && (now.minute() < 20);		// Between 7:10 and 7:20 AM, turn the color read
+		// See if the current time matches a warning time
+		if( typeof warningTimes != 'undefined' ) {
+			for( var i=0; i < warningTimes.length; i++ ) {
+				var startTime = moment( warningTimes[i].startTime, "H:mm" );
+				if( !startTime.isValid() )
+					continue;
+
+				var endTime   = moment( warningTimes[i].endTime,   "H:mm" );
+				if( !endTime.isValid() )
+					continue;
+
+				if( endTime < startTime )
+					endTime.add( 1, "days" );
+
+				if( (now.valueOf() > startTime.valueOf()) && (now.valueOf() < endTime.valueOf()) ) {
+					color   = warningTimes[i].color;
+					message = warningTimes[i].message;
+				}
+			}
+		}
+
+//		var isWarningTime = (now.hour() == 7) && (now.minute() >= 10) && (now.minute() < 20);		// Between 7:10 and 7:20 AM, turn the color read
 
 		$('.date').html(date);
-		$('.time').html(				// Ugly table here, but it gets the job done
+		$('.time').html(																			// Ugly table here, but it gets the job done
 		    '<table>' +
 			    '<tr>' +
-				    '<td class="time' + (isWarningTime ? ' warning"' : '"') +  						// If it's warning time, use the red color
+				    '<td class="time" style="color:' + color + '" ' +								// Apply the color
 					    'rowspan=4 cellpadding=0>' + now.format('h:mm') +'</td>' +					// Time cell is four rows tall
 					'<td> </td>' + 																	// Empty cell next to it
 				'</tr><tr>' +
@@ -162,6 +185,9 @@ jQuery(document).ready(function($) {
 				'</tr><tr><td></td>' +
 				'</tr>' +
 			'</table>');
+
+		var timeWarning = '<div style="color:' + color + '">&bull; ' + message + '</div>';
+		$('.timeWarning').updateWithText( timeWarning, 1000 );
 
 		setTimeout(function() {
 			updateTime();

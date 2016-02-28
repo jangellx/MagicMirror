@@ -19,6 +19,7 @@
 	<div class="top left">
 		<div class="date small dimmed"></div>
 		<div class="time"></div>
+		<div class="timeWarning xxsmall"></div>
 		<div class="holidays xxsmall dimmed"></div>
 		<div class="calendar xxsmall"></div>
 		<div class="mbta xxxsmall dimmed"></div>
