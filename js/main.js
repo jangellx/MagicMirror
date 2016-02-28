@@ -187,7 +187,7 @@ jQuery(document).ready(function($) {
 			'</table>');
 
 		if( message == "" )
-			var timeWwarning = "";
+			var timeWarning = "";
 		else
 			var timeWarning = '<div style="color:' + color + '">&bull; ' + message + '</div>';
 		$('.timeWarning').updateWithText( timeWarning, 1000 );
