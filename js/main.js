@@ -186,7 +186,10 @@ jQuery(document).ready(function($) {
 				'</tr>' +
 			'</table>');
 
-		var timeWarning = '<div style="color:' + color + '">&bull; ' + message + '</div>';
+		if( message == "" )
+			var timeWwarning = "";
+		else
+			var timeWarning = '<div style="color:' + color + '">&bull; ' + message + '</div>';
 		$('.timeWarning').updateWithText( timeWarning, 1000 );
 
 		setTimeout(function() {
