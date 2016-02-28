@@ -570,6 +570,8 @@ jQuery(document).ready(function($) {
 			fetchNewsForURL( index++, url );
 		}
 
+		// Update again in 5 minutes
+		setTimeout( fetchNews, 300000 );
 	};
 
 	fetchNews();
@@ -579,12 +581,7 @@ jQuery(document).ready(function($) {
 	function fetchNewsForURL( index, url )
 	{
 		$.getJSON( url, function(jsonRSS, textStatus) {
-			// Success; cache the feed titles
-			if( jsonRSS.query.results == null ) {
-				// Error; re-arm the timer for 2 minutes
-				setTimeout( fetchNews, 120000 );
-
-			} else {
+			if( jsonRSS.query.results != null ) {
 				// Success; get the list of articles
 				var stories = [];
 				for (var i in jsonRSS.query.results.item)
@@ -599,14 +596,7 @@ jQuery(document).ready(function($) {
 				}
 
 				$('.luRSS').updateWithText('rss (' + newsCountTotal + ' articles/' + news.length + ' feeds): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
-
-				// Update in 5 minutes
-				setTimeout( fetchNews, 300000 );
 			}
-			
-		}).fail (function( jqxhr, textStatus, error ) {
-			// Error; re-arm the timer for 2 minutes
-			setTimeout( fetchNews, 120000 );
 		});
 	}
 
