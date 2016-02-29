@@ -19,12 +19,13 @@ free API key (it's easy) from [developer.forecast.io](developer.forecast.io) and
 You get 1000 free requests a day, so I have my mirror update once every fifteen minutes instead of
 every minute.  Due to cross site scripting protections, using forecast.io also requires the use of
 a proxy.php that I modified from the [unofficial forecast.io Javascript library by Ian Tearle](https://github.com/iantearle/forecast.io-javascript-api).
-- Added a tempertuare and chance of rain graph with markers for freezing and hot (80 degree F) temperatures and ligter background areas representing daylight.  This was iinspired by the Wearther Underground iOS "Today" widget to provide an overview of the day's weather.
+- Added a tempertuare and chance of rain graph with markers for freezing and hot (80 degree F) temperatures and ligter background areas representing daylight.  This was iinspired by the Wearther Underground iOS "Today" widget to provide an overview of the day's weather.  This was further enahanced by drawing lines up or down from each hour representing the "feels like" temperature relative tot he real temperature.
 - Replaced the forecast table with a bar graph similar to the one used in the iOS Dark Sky app.  This makes it easy to compare days and find the highs and lows for the week at a glance.
 - Added MBTA alerts from the [http://realtime.mbta.com/](MBTA Realtime API).  Thos agaom reqiores getting your own key (easy to do) from the [http://realtime.mbta.com/Portal/Account/Register](MBTA developer site) and setting it and the route you want alerts for in config.js.  Only current alerts are shown, with minor alerts shown with white icons instead of red.  You get 10000 requests a day, so I update every five minutes.  This uses the smae proxy.php as the forecast.io implementation above due to issues I had getting JSONP to work.
 - Added holidays via [http://holidayapi.com/](HolidayAPI), augmenting it with filters and custom holidays
 (which draw in gold), both of which are set through the config.
 - Customizable weather-based "compliments" based on the current weather and the average temperature over the next 12 hours.
+- Added support for multiple RSS feeds.
 - Removed the fractional temperatures.
 - Added daily and weekly summary text from forecast.io.
 - Added an extra delay to the RSS headlines based on the length of the headline (20ms per letter).
@@ -35,6 +36,10 @@ a proxy.php that I modified from the [unofficial forecast.io Javascript library 
 For more information, visit [my site at tmproductions.com](http://www.tmproductions.com/projects-blog/2015/8/29/magic-mirror). For more information on the original that inspired mine, visit [Michael's site](http://michaelteeuw.nl/tagged/magicmirror).
 
 # Experimental Features
+
+## Separate Normal and Weather/Temperature Compliments
+Rather than mixing the normal compliments with the weather and temperature compliments, the latter can be displayed in smaller text under the former.  This just looks kind of weird, and doesn't read well, so it's disabled by default.  It can be enabled by the mixCompliments flag in the config.
+
 ## Weather Station Mode
 For those who don't actually plan on overlying this with a mirror, there is a "weather station mode".  In the config file there is weatherBGImages, which is a dictionary of arrays of URLs to use for the background image, with each dictionary key reqpresenting a different weather condition.  These arrays are empty by default, and the background is simply black.  However, you can add one or more images to each array, and an image from the array assocaited with the current weather will be displaeyd as the background of the page.  If more than one image is provided, they will be randomly switched between at the interval specified.  Since images can make it hard to read the interface, a tint level can also be set to make the images darker and the interface easier to read.
 
@@ -44,6 +49,6 @@ way to avoid tracking specific previously-comitted files, js/config.js was renam
 -REMOVE_THIS- bit after you clone/sync and you should be all set.
 
 
-Screenshot of the latest version.
+Screenshot of a reasonably recent version.
 
 ![Magic Mirror screenshot](http://static1.squarespace.com/static/510dbdc1e4b037c811a42c5a/t/567f18e9c647adf832f21589/1451170026691/MagicMirrorExample.png)
