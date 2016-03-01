@@ -95,19 +95,6 @@ jQuery(document).ready(function($) {
 	var tempGraphSVG;							// SVG used to draw the temp/rain graph into
 	var weekGraphSVG;							// SVG used to draw the weekly forecast graph into
 
-	moment.locale(lang, {						// Language localization
-		calendar : {							// Calendar localization used for upcoming holidays.  Should really be localized too...
-			lastDay : '[Yesterday was] ' ,
-			sameDay : '[Today is] ',
-			nextDay : '[Tomorrow is] ',
-			thisWeek : 'dddd [is] ',
-			lastWeek : '[Last] dddd [was] ',
-			nextWeek : 'dddd [is] ',
-			sameElse : 'MM/DD [is] '
-		}
-	});
-
-
 	// Set the background image tint amount
 	$('.backgroundTint').css('opacity', function () {
 		return weatherBGTint;
@@ -202,6 +189,11 @@ jQuery(document).ready(function($) {
 		new ical_parser("calendar.php", function(cal){
         	events = cal.getEvents();
         	eventList = [];
+
+			// Clear any previous calendar formatting customizations
+			moment.locale(lang, {						// Language localization
+				calendar : null
+			});
 
         	for (var i in events) {
         		var e = events[i];
@@ -389,6 +381,19 @@ jQuery(document).ready(function($) {
 			function addHolidaysFromList( holidays, doDateTest ) {
 				var	prevDate = moment();
 				prevDate.add( -1, "days" ); 			// To make sure that we get today as well as future dates
+
+				// Customize the locale for holidays
+				moment.locale(lang, {						// Language localization
+					calendar : {							// Calendar localization used for upcoming holidays.  Should really be localized too...
+						lastDay : '[Yesterday was] ' ,
+						sameDay : '[Today is] ',
+						nextDay : '[Tomorrow is] ',
+						thisWeek : 'dddd [is] ',
+						lastWeek : '[Last] dddd [was] ',
+						nextWeek : 'dddd [is] ',
+						sameElse : 'MM/DD [is] '
+					}
+				});
 
 				for( var key in holidays ) {
 					var thisHoliday = holidays[key];
