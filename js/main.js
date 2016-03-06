@@ -113,7 +113,7 @@ jQuery(document).ready(function($) {
 	// });
 
 
-	(function checkVersion()
+	function checkVersion()
 	{
 		$.getJSON('githash.php', {}, function(json, textStatus) {
 			if (json) {
@@ -126,7 +126,8 @@ jQuery(document).ready(function($) {
 		setTimeout(function() {
 			checkVersion();
 		}, 3000);
-	})();
+	}
+//	checkVersion();
 
 	(function updateTime()
 	{
