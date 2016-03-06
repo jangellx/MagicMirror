@@ -13,14 +13,20 @@
 {
 	$.getJSON('proxy.php?url=https://api.forecast.io/forecast/' + darkSkyAPIKey + '/' + darkSkyLat + ',' + darkSkyLon, function(json, textStatus) {
 		// Update the current weather
-		var current    = json.currently;
-		var temp       = roundVal(current.temperature);
-		var wind       = roundVal(current.wind);
+		var current       = json.currently;
+		var temp          = roundVal(current.temperature);
+		var feelsLikeTemp = roundVal(current.apparentTemperature);
+		var wind          = roundVal(current.wind);
 
 		curWeatherIcon = current.icon;							// Stored for use by weather-related background images
 		var iconClass  = "wi-forecast-io-" + current.icon;
 		var icon       = $('<span/>').addClass('icon').addClass('dimmed').addClass('wi').addClass(iconClass);
-		$('.temp').updateWithText( icon.outerHTML() + temp + '&deg;', 1000 );
+		$('.temp').updateWithText( icon.outerHTML() + temp + '&deg;<br>', 1000 );
+
+		var tempFeelsLikeText = "";
+		if( temp != feelsLikeTemp )
+			tempFeelsLikeText = 'feels like ' + feelsLikeTemp + '&deg;'
+		$('.tempfeelslike').updateWithText( tempFeelsLikeText, 1000 );
 
 		var today      = json.daily.data[0];
 		var now        = new Date();

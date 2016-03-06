@@ -302,7 +302,7 @@ jQuery(document).ready(function($) {
 	//  and if today is a holiday.
 	(function updateHolidays()
 	{
-		// The timer updates a once an hour, but we only need to refresh once a day.  We check to
+		// The timer updates once an hour, but we only need to refresh once a day.  We check to
 		//  see if the last time we updated on a different day; if not, we just rearm the timer.
 //		var today      = moment( "2015-12-31 12:20", "YYYY-MM-DD HH:MM" )	/// debugging stuff
 //		holidayThisDay = today.add( 1, "days" )
@@ -657,6 +657,25 @@ jQuery(document).ready(function($) {
 		}
 
 		$('.newsTitle').updateWithTextForce(key + '<hr width="20%" style="opacity:0.3">', 2000, true);
+
+		// Draw feed/story dots
+		var newsDots = ""
+		for( i=0; i < news.length; i++ ) {
+			if( i == newsFeedIndex )
+				newsDots += '<span class="dimmed">&bull;</span>'
+			else
+				newsDots += '<span class="xxdimmed">&bull;</span>'
+		}
+		newsDots += "  ";
+
+		for( i=0; i < news[ newsFeedIndex ].length; i++ ) {
+			if( i == newsStoryIndex )
+				newsDots += '<span class="dimmed">&bull;</span>'
+			else
+				newsDots += '<span class="xxdimmed">&bull;</span>'
+		}
+
+		$('.newsDots').updateWithTextForce(newsDots, 2000, true);
 
 		// Get the story text
 		var newsFeed = news[ newsFeedIndex ];

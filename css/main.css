@@ -92,7 +92,18 @@ body, html {
 
 .temp
 {
-	text-align:center
+	text-align:center;
+	line-height:90%
+}
+
+.tempfeelslike
+{
+	text-align:center;
+}
+
+.spacer
+{
+	height:10px
 }
 
 /* -- Temperature and Rain Graph -- */

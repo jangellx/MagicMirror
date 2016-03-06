@@ -28,18 +28,13 @@
 	<div class="top right">
 	    <div class="windsun small dimmed"></div>
 		<div class="temp"></div>
+		<div class="tempfeelslike xxsmall"></div>
+		<div class="spacer"></div>
 		<div class="tempgraph"></div>
 		<!-- <div class="forecast small dimmed"></div>  Old table method; replaced with weekgraph SVG -->
 		<div class="weekgraph"></div>
 		<div class="summary xxsmall2 dimmed"></div>
 		<div class="weatheralerts xxsmall2 dimmed"></div>
-	</div>
-
-	<div class="farbottom right">
-		<div class="lastupdated luWeather xxxsmall xxdimmed"></div>
-		<div class="lastupdated luMBTA xxxsmall xxdimmed"></div>
-		<div class="lastupdated luRSS xxxsmall xxdimmed"></div>
-		<div class="lastupdated luHolidays xxxsmall xxdimmed"></div>
 	</div>
 
 	<div class="center-ver center-hor">
@@ -54,6 +49,17 @@
 	<div class="bottom center-hor">
 		<div class="newsTitle xsmall xxdimmed"></div>
 		<div class="news medium"></div>
+	</div>
+
+	<div class="farbottom center-hor">
+		<div class="newsDots xxxsmall"></div>
+	</div>
+
+	<div class="farbottom right">
+		<div class="lastupdated luWeather xxxsmall xxdimmed"></div>
+		<div class="lastupdated luMBTA xxxsmall xxdimmed"></div>
+		<div class="lastupdated luRSS xxxsmall xxdimmed"></div>
+		<div class="lastupdated luHolidays xxxsmall xxdimmed"></div>
 	</div>
 
 </div>
