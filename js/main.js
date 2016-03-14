@@ -39,18 +39,6 @@ function roundVal(temp)
 	return Math.round( temp );
 }
 
-function kmh2beaufort(kmh)
-{
-	var speeds = [1, 5, 11, 19, 28, 38, 49, 61, 74, 88, 102, 117, 1000];
-	for (var beaufort in speeds) {
-		var speed = speeds[beaufort];
-		if (speed > kmh) {
-			return beaufort;
-		}
-	}
-	return 12;
-}
-
 // from http://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
 function shadeColor2(color, percent) {   
     var f=parseInt(color.slice(1),16),t=percent<0?0:255,p=percent<0?percent*-1:percent,R=f>>16,G=f>>8&0x00FF,B=f&0x0000FF;
@@ -68,6 +56,13 @@ if( typeof feedURLs == 'undefined') {
 	else
 		var feedURLs = {"News" : feed};
 }
+
+// Test for other missing variables
+if( typeof clock12Hour == 'undefined')
+	var clock12Hour = true;
+
+if( typeof dayBeforeMonth == 'undefined')
+	var dayBeforeMonth = false;
 
 // Test for missing mixCompliments variable, setting it to true if missing
 if( typeof mixCompliments == 'undefined') {
@@ -131,8 +126,12 @@ jQuery(document).ready(function($) {
 
 	(function updateTime()
 	{
+		moment.locale(lang, {						// Language localization
+			calendar : null
+		});
+
 		var now     = moment();
-        var date    = now.format('dddd, MMMM Do, YYYY');
+        var date    = now.format( dayBeforeMonth ? 'dddd, D MMMM, YYYY' : 'dddd, MMMM Do, YYYY');
 		var color   = $('.time .warning').css('color');
 		var message = "";
 
@@ -157,19 +156,22 @@ jQuery(document).ready(function($) {
 			}
 		}
 
-//		var isWarningTime = (now.hour() == 7) && (now.minute() >= 10) && (now.minute() < 20);		// Between 7:10 and 7:20 AM, turn the color read
+		// Figure out 12 vs 24 hour time
+		var hoursMins = now.format( clock12Hour ? 'h:mm' : 'H:mm' );
+		var ampm      = clock12Hour ? now.format('a') : '&nbsp;';									// &nbsp; keeps the cell from becoming 0 height
 
+		// Draw the current time table
 		$('.date').html(date);
 		$('.time').html(																			// Ugly table here, but it gets the job done
 		    '<table>' +
 			    '<tr>' +
 				    '<td class="time" style="color:' + color + '" ' +								// Apply the color
-					    'rowspan=4 cellpadding=0>' + now.format('h:mm') +'</td>' +					// Time cell is four rows tall
+					    'rowspan=4 cellpadding=0>' + hoursMins +'</td>' +							// Time cell is four rows tall
 					'<td> </td>' + 																	// Empty cell next to it
 				'</tr><tr>' +
 					'<td class="sec">'   + now.format('ss') + '</td>' +								// Seconds cell is pushed down a bit to line up with the top of the time
 				'<tr>' +
-					'<td class="am_pm">' + now.format('a')  + '</td>' +								// AM/PM cell is pushed up a bit to line up with the bottom of the time
+					'<td class="am_pm">' + ampm  + '</td>' +										// AM/PM cell is pushed up a bit to line up with the bottom of the time
 				'</tr><tr><td></td>' +
 				'</tr>' +
 			'</table>');
@@ -392,7 +394,7 @@ jQuery(document).ready(function($) {
 						thisWeek : 'dddd [is] ',
 						lastWeek : '[Last] dddd [was] ',
 						nextWeek : 'dddd [is] ',
-						sameElse : 'MM/DD [is] '
+						sameElse : (dayBeforeMonth ? 'DD/MM'  : 'MM/DD') + ' [is] '
 					}
 				});
 
@@ -490,7 +492,7 @@ jQuery(document).ready(function($) {
 					}
 
 					if( numAddedHere > 0 ) {
-						if( date.month() == now.month() && date.day() == now.day() )
+						if( date.diff( now, 'days' ) == 0  )
 							thisHolidayText += "!"
 
 						thisHolidayText += '</div>'

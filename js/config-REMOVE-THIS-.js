@@ -1,19 +1,66 @@
-// for navigator language
-var lang = window.navigator.language;
-// you can change the language
-// var lang = 'en';
+//
+//--- CLOCK ---------------------------------------------------------------------------------------
+//
+
+// 12 or 24 hours clock.  Set to false for a 24 hours clock
+var clock12Hour = true;
+
+// Determine if the dey is displayed before the month (13 March) or after (March 13)
+var dayBeforeMonth = false;
+
+// Language for the times.  Enforcing 'en' makes sure that dates are displayed as
+//  "March 13th" instead of "March 13" in moment.js.
+//var lang = window.navigator.language;
+var lang = 'en';
+
+// Warning Times
+//  Adding times, colors and messages to this array will cause the
+//  current time to change color and display the message underneath.
+//  It can be useful as a warning to let you know that it's time for you
+//  to leave before you miss the train, for example.  The time format is
+//  "HH:MM" with HH between 0-23 and MM between 0 and 59.
+var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", message:"Leave soon to catch the train" },
+                     { startTime:"17:50", endTime:"18:00", color:"FFA500", message:"Leave soon for the train"      } ];
+
+
+//
+//--- WEATHER -------------------------------------------------------------------------------------
+//
 
 // Set up your Dark Sky/forecast.io infromation and lat/lon here
 var darkSkyAPIKey  = "Insert your APi key from http://developer.forecast.io here";
 var darkSkyLat     = "41.000";
 var darkSkyLon     = "-71.000"
 
+// Units for values related to the weather, including temperatures and
+//  speeds.  Should be one of: us, si, ca, uk, uk2 and auto.  For details,
+//  see https://developer.forecast.io/docs/v2#Options
+var darkSkyUnits = "auto";
+
+// Number of decimal places to round temperatures to.  Usually 0 for
+//  regions that use fahrenheit (ie: 32) and 1 for celcius (ie: 10.3).
+var tempDecimalPlaces = 0;
+
+// Language for the weather information.  This only applies to information
+//  returned directly by Dark Sky/forecast.io.  For more available languages
+//  see https://developer.forecast.io/docs/v2#Options
+var darkSkyLanguage = "en"
+
+// Number of hours to display in the temperature/rain graph
+var tempGraphRangeOfHours = 30;
+
+//
+//--- MBTA ----------------------------------------------------------------------------------------
+//
+
 // Set up your MBTA API key, available here: http://realtime.mbta.com/Portal/
 var mbtaAPIKey     = "Insert your API key from http://realtime.mbta.com/Portal/ here"
 var mbtaRoute      = "Insert your MBTA route string here"
 
-// Number of hours to display in the temperature/rain graph
-var tempGraphRangeOfHours = 30;
+
+//
+//--- HOLIDAYS -------------------------------------------------------------------------------------
+//
 
 // Country code for holidays, as per holidayapi.com
 var holidayCountry = "US";
@@ -40,17 +87,11 @@ var holidaysCustom = [
 //			{ date: '01-02', name: 'Day After New Years' },
 ];
 
-// Warning Times
-//  Adding times, colors and messages to this array will cause the
-//  current time to change color and display the message underneath.
-//  It can be useful as a warning to let you know that it's time for you
-//  to leave before you miss the train, for example.  The time format is
-//  "HH:MM" with HH between 0-23 and MM between 0 and 59.
-var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", message:"Leave soon to catch the train" },
-                     { startTime:"17:50", endTime:"18:00", color:"FFA500", message:"Leave soon for the train"      } ];
 
-// RSS Feeds
 //
+//--- RSS FEEDS -------------------------------------------------------------------------------------
+//
+
 //  Old style supporting a single feed.
 // var feed = 'http://www.wbur.org/feed'
 //
@@ -60,6 +101,11 @@ var feedURLs = {'World'      : 'http://feeds.reuters.com/Reuters/worldNews',		//
 				'Politics'   : 'http://feeds.reuters.com/Reuters/PoliticsNews',		// Reuters Politics
 				'Technology' : 'http://feeds.reuters.com/Reuters/technologyNews',	// Reuters Technology
 				'Science'    : 'http://feeds.reuters.com/reuters/scienceNews' };	// Reuters Science
+
+
+//
+//--- COMPLIMENTS -------------------------------------------------------------------------------------
+//
 
 // Time of Day Compliments
 var morning = [

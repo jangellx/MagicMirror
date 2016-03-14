@@ -122,7 +122,7 @@ body, html {
 .tempgraphFeelsLikeBar
 {
 	fill:         red;
-	fill-opacity: 40%;
+	fill-opacity: 0.4;
     stroke:       none;
 }
 
@@ -172,13 +172,13 @@ body, html {
     fill:           none;
 	stroke:         #FFF;
 	stroke-width:   1;
-	stroke-opacity: 75%;
+	stroke-opacity: 0.75;
 }
 
 .tempgraphAccumArea
 {
     fill:         #CCC;
-	fill-opacity: 50%;
+	fill-opacity: 0.5;
 	stroke-width: 0;
 }
 
@@ -193,8 +193,8 @@ body, html {
 {
 	stroke-width:     3;
 /*	stroke-dasharray: 1,1;*/
-	stroke-opacity:   40%;
-	fill-opacity:     50%;
+	stroke-opacity:   0.4;
+	fill-opacity:     0.5;
 }
 
 .tempGraphHotColdLine.freezeLine
@@ -219,7 +219,7 @@ body, html {
     stroke:           white;
 	stroke-width:     1;
 /*	stroke-dasharray: 1,1;*/
-	stroke-opacity:   25%;
+	stroke-opacity:   0.25;
 }
 
 .tempGraphHourMarkerText
@@ -227,7 +227,7 @@ body, html {
     font-family:  HelveticaNeue;
     font-size:    8px;
     fill:         white;
-	fill-opacity: 35%;
+	fill-opacity: 0.35;
 	text-anchor:  begin;
 }
 

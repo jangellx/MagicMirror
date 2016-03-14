@@ -30,11 +30,13 @@
 		<div class="temp"></div>
 		<div class="tempfeelslike xxsmall"></div>
 		<div class="spacer"></div>
-		<div class="tempgraph"></div>
-		<!-- <div class="forecast small dimmed"></div>  Old table method; replaced with weekgraph SVG -->
-		<div class="weekgraph"></div>
-		<div class="summary xxsmall2 dimmed"></div>
-		<div class="weatheralerts xxsmall2 dimmed"></div>
+		<div class="right" style="right:0px;">						<!-- Without this div, everything inside gets left aligned with the temperature instead of right aligned for some reason -->
+		  <div class="tempgraph"></div>
+		  <!-- <div class="forecast small dimmed"></div>  Old table method; replaced with weekgraph SVG -->
+		  <div class="weekgraph"></div>
+		  <div class="summary xxsmall2 dimmed"></div>
+		  <div class="weatheralerts xxsmall2 dimmed"></div>
+		</div>
 	</div>
 
 	<div class="center-ver center-hor">

@@ -4,6 +4,41 @@
 //  current weather.
 //
 
+// Convert from KPH to the Beufort scale
+function kmh2beaufort(kmh)
+{
+	var speeds = [1, 5, 11, 19, 28, 38, 49, 61, 74, 88, 102, 117, 1000];
+	for (var beaufort in speeds) {
+		var speed = speeds[beaufort];
+		if (speed > kmh) {
+			return beaufort;
+		}
+	}
+	return 12;
+}
+
+// Round the temperature based on tempDecimalPlaces
+function roundTemp(temp)
+{
+	var scalar = 1 << tempDecimalPlaces;
+
+	temp *= scalar;
+	temp  = Math.round( temp );
+	temp /= scalar;
+
+	return temp;
+}
+
+// Add support for legacy configs that don't define certain variables
+if( typeof darkSkyUnits == 'undefined')
+	var darkSkyUnits = "auto";
+
+if( typeof darkSkyLanguage == 'undefined')
+	var darkSkyLanguage = "en";
+
+if( typeof tempDecimalPlaces == 'undefined')
+	var tempDecimalPlaces = 0;
+
 // Get the weather via Dark Sky's API.  We get 1000 free updates a day,
 //  so we only check once every 15 minutes.  That should be more than
 //  frequent enough.  This updates the current conditions, forecast,
@@ -11,12 +46,16 @@
 //  one JSON call.
 (function updateWeatherForecast()
 {
-	$.getJSON('proxy.php?url=https://api.forecast.io/forecast/' + darkSkyAPIKey + '/' + darkSkyLat + ',' + darkSkyLon, function(json, textStatus) {
+	var dsUnits = '?units='    + darkSkyUnits;			// First argument starts with ?
+	var dsLang  = '&amp;lang=' + darkSkyLanguage;		// Subsequent arguments start with &, encoded so the PHP script doesn't think they're its arguments
+	var url     = 'https://api.forecast.io/forecast/' + darkSkyAPIKey + '/' + darkSkyLat + ',' + darkSkyLon + dsUnits + dsLang;
+
+	$.getJSON('proxy.php?url=' + encodeURI( url ), function(json, textStatus) {
 		// Update the current weather
 		var current       = json.currently;
-		var temp          = roundVal(current.temperature);
-		var feelsLikeTemp = roundVal(current.apparentTemperature);
-		var wind          = roundVal(current.wind);
+		var temp          = roundTemp(current.temperature);
+		var feelsLikeTemp = roundTemp(current.apparentTemperature);
+		var wind          = roundVal(current.windSpeed);
 
 		curWeatherIcon = current.icon;							// Stored for use by weather-related background images
 		var iconClass  = "wi-forecast-io-" + current.icon;
@@ -33,14 +72,14 @@
 
 		var sunString;
 		if (today.sunriseTime*1000 < now && today.sunsetTime*1000 > now) {
-			var sunset = new moment.unix(today.sunsetTime).format( "h:mm a" );
+			var sunset = new moment.unix(today.sunsetTime).format( clock12Hour ? "h:mm a" : "H:mm" );
 			sunString = '<span class="wi wi-sunset xdimmed"></span> '  + sunset;
 		} else {
-			var sunrise = new moment.unix(today.sunriseTime).format( "h:mm a" );
+			var sunrise = new moment.unix(today.sunriseTime).format( clock12Hour ? "h:mm a" : "H:mm" );
 			sunString = '<span class="wi wi-sunrise xdimmed"></span> ' + sunrise;
 		}
 
-		var windString = '<span class="wi wi-strong-wind xdimmed"></span> ' + kmh2beaufort(wind) ;
+		var windString = '<span class="wi wi-strong-wind xdimmed"></span> ' + wind;
 		$('.windsun').updateWithText(windString+' '+sunString, 1000);
 
 		// Update the weekly forecast
@@ -108,8 +147,8 @@ function updateWeatherForcast_UpdateWeeklyTable( json ) {
 		var row = $('<tr />').css('opacity', opacity);
 		row.append($('<td/>').addClass('day').html(moment.weekdaysShort(dt.getDay())));
 		row.append($('<td/>').addClass('icon-small forecast-icon').addClass(iconClass));
-		row.append($('<td/>').addClass('temp-max').html(roundVal(day.temperatureMax) + '&deg;'));
-		row.append($('<td/>').addClass('temp-min').html(roundVal(day.temperatureMin) + '&deg;'));
+		row.append($('<td/>').addClass('temp-max').html(roundTemp(day.temperatureMax) + '&deg;'));
+		row.append($('<td/>').addClass('temp-min').html(roundTemp(day.temperatureMin) + '&deg;'));
 
 		forecastTable.append(row);
 		opacity -= 0.155;
@@ -124,8 +163,8 @@ function updateWeatherForcast_UpdateWeeklyTable( json ) {
 // Draw the weekly forecast as a graph, similar to how Dark Sky does.  Each day is drawn as a bar
 // prepresenting the low and high temperature.
 function updateWeatherForcast_UpdateWeeklyGraph( dailyData ) {
-	var marginL       = 85;
-	var marginR       = 17;
+	var marginL       = 85 + (tempDecimalPlaces * 10);				// Add 10 pixels per extra decimal place so that the temperature labels fit
+	var marginR       = 17 + (tempDecimalPlaces * 10);				// Same here
 	var marginT       =  2;
 	var marginB       = 10;
 	var lineMargin    =  8;
@@ -256,7 +295,7 @@ function updateWeatherForcast_UpdateWeeklyGraph( dailyData ) {
 	// - Update all min labels
 	weekGraphSVG.selectAll( ".weekgraphTempTextMin" )
 				.text( function(d) {
-					return Math.round( d.temperatureMin ).toString() + "\u00B0";				// Unicode for &deg;
+					return roundTemp( d.temperatureMin ).toString() + "\u00B0";				// Unicode for &deg;
 				})
 				.attr( "x", function(d,i) {
 					return tempXScale( d.temperatureMin ) - barTextMargin;
@@ -277,7 +316,7 @@ function updateWeatherForcast_UpdateWeeklyGraph( dailyData ) {
 	// - Update all max labels
 	weekGraphSVG.selectAll( ".weekgraphTempTextMax" )
 				.text( function(d) {
-					return Math.round( d.temperatureMax ).toString() + "\u00B0";				// Unicode for &deg;
+					return roundTemp( d.temperatureMax ).toString() + "\u00B0";				// Unicode for &deg;
 				})
 				.attr( "x", function(d,i) {
 					return tempXScale( d.temperatureMax ) + barTextMargin;
@@ -585,7 +624,7 @@ function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 		// - Update all text
 		tempGraphSVG.selectAll( ".tempgraphTempText" )
 					.text( function(d) {
-						return Math.round( d.temperature ).toString() + "\u00B0";				// Unicode for &deg;
+						return roundTemp( d.temperature ).toString() + "\u00B0";				// Unicode for &deg;
 					})
 					.attr( "x", function(d) {
 						return timeXScale( d.time ) + 2;
@@ -653,7 +692,7 @@ function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 
 		tempGraphSVG.selectAll( ".tempGraphHourMarkerText" )
 					.text( function(d,i) {
-						return moment.unix( startUnix  + i * sixHours).format( "h a" );
+						return moment.unix( startUnix  + i * sixHours).format( clock12Hour ? "h a" : "H" );
 					})
 					.attr( "transform", function(d,i) {
 						return "translate(" + timeXScale( startUnix + i * sixHours ) + ",2)" +		// Tanslate...
