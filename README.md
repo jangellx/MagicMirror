@@ -11,8 +11,7 @@ ShairPort so that Apple AirPlay can be used to play music through the TV's speak
 warm LCD doesn't fog when in the bathroom.  [Details on my build can be found on my website](http://www.tmproductions.com/projects-blog/2015/8/29/magic-mirror).
 
 I tweaked Micheal's code a bit to my peculiarities, adding whole new sections as time went on.  It's been a long time since I've done any Javascript, so some of these changes might be a little crude in their implementation, but they get the job done:
-- Display time as a 12 hour clock instead of a 24 hour clock, displaying AM/PM under the seconds (ugly
-HTML table hackery there).
+- Basic localization support, with 12/24 hour clocks and F/C temperatures, and number of decimal points for the temps.
 - Tweaks to some positioning and margins to better reflect the size and use of my mirror.
 - Switched the weather from OpenWeatherMap to Dark Sky's forecast.io.  This requires getting your own
 free API key (it's easy) from [developer.forecast.io](developer.forecast.io) and setting it and your lat/lon in js/config.js.
