@@ -175,6 +175,14 @@ function updateMBTAServiceAlerts_UpadteOne( index, alertID, defaultText )
 // Outer function that updaets the alert list, calling the above functions to get information
 //  about individual alerts
 function updateMBTAServiceAlerts() {
+	// Fail out if none of the config state is set up
+	if( typeof mbtaAPIKey == 'undefined')
+		return;
+
+	if( typeof mbtaRoute == 'undefined')
+		return;
+
+	// Request the alert headers on this route
 	var url = 'proxy.php?url=http://realtime.mbta.com/developer/api/v2/ALERTHEADERSBYROUTE%3Fapi_key=' + mbtaAPIKey + '%26route=' + mbtaRoute + '%26format=json';
 	$.getJSON(url, function(json, textStatus) {
 		// Reset our global array of alerts

@@ -54,8 +54,8 @@ var tempGraphRangeOfHours = 30;
 //
 
 // Set up your MBTA API key, available here: http://realtime.mbta.com/Portal/
-var mbtaAPIKey     = "Insert your API key from http://realtime.mbta.com/Portal/ here"
-var mbtaRoute      = "Insert your MBTA route string here"
+//var mbtaAPIKey     = "Insert your API key from http://realtime.mbta.com/Portal/ here"
+//var mbtaRoute      = "Insert your MBTA route string here"
 
 
 //
