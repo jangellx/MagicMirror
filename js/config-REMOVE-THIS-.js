@@ -58,11 +58,19 @@ var tempGraphRangeOfHours = 30;
 
 //
 //--- MBTA ----------------------------------------------------------------------------------------
-//
+// Boston area train alerts
 
 // Set up your MBTA API key, available here: http://realtime.mbta.com/Portal/
 //var mbtaAPIKey     = "Insert your API key from http://realtime.mbta.com/Portal/ here"
 //var mbtaRoute      = "Insert your MBTA route string here"
+
+//
+//--- MTA -----------------------------------------------------------------------------------------
+// NYC area train alerts.  EXPERIMENTAL
+//var mtaAPIKey             = "Insert your API key from http://realtime.mbta.com/Portal/ here";
+//var mtaStartStation       = "CLP";
+//var mtaEndStation         = "NYK";
+//var mtaSwapStationsAtHour = 15;		// Hour in the day (ie: 15 for 3 PM) after which to swap the stations
 
 
 //

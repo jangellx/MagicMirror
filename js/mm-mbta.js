@@ -8,7 +8,7 @@
 
 var mbtaAlerts          = [];				// List of MBTA alerts as HTML, one for each alert we have a JSON request for
 var mbtaAlertsPending   = 0;				// Number of JSON requests for MBTA alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
-var mbtaServiceName     = "MBTA";			// The name of the service, displayed in the title as "n MBTA service alerts".  Provided as a variable so that it can be replaced for other transit services.
+var mbtaServiceName     = "MBTA service";	// The name of the service, displayed in the title as "n MBTA service alerts".  Provided as a variable so that it can be replaced for other transit services.
 
 // See https://groups.google.com/forum/#!topic/massdotdevelopers/mco5gtgPEP4 for where this
 //  list of effects came from.  The key is the effect_name, and the value is the class defined
@@ -75,7 +75,7 @@ function updateMBTAServiceAlerts_UpadteDiv()
 
 		// This creates the string, "n MBTA service alerts", where n is the number of alerts, "MBTA" is a variable and "alerts" may be "alert" when there's only one alert
 		var alertCountText = (nonOngoingCount == 1) ? 'alert' : 'alerts';
-		alerts = '<p class="xxsmall" style="text-align:center">' + nonOngoingCount + ' ' + mbtaServiceName + ' service ' + alertCountText + '</p>';
+		alerts = '<p class="xxsmall" style="text-align:center">' + nonOngoingCount + ' ' + mbtaServiceName + ' ' + alertCountText + '</p>';
 
 		for( var i in mbtaAlerts ) {
 			if( mbtaAlerts[i] == "" )			// These are Ongoing or Ongoing-Upcoming alerts that we're skipping
