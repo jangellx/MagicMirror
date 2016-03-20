@@ -46,8 +46,8 @@ if( typeof tempDecimalPlaces == 'undefined')
 //  one JSON call.
 (function updateWeatherForecast()
 {
-	var dsUnits = '?units='    + darkSkyUnits;			// First argument starts with ?
-	var dsLang  = '&amp;lang=' + darkSkyLanguage;		// Subsequent arguments start with &, encoded so the PHP script doesn't think they're its arguments
+	var dsUnits = '%3Funits='    + darkSkyUnits;		// First argument starts with ?
+	var dsLang  = '%26amp;lang=' + darkSkyLanguage;		// Subsequent arguments start with &, encoded so the PHP script doesn't think they're its arguments
 	var url     = 'https://api.forecast.io/forecast/' + darkSkyAPIKey + '/' + darkSkyLat + ',' + darkSkyLon + dsUnits + dsLang;
 
 	// Make sure Dark Sky is properly set up
