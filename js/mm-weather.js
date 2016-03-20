@@ -50,6 +50,10 @@ if( typeof tempDecimalPlaces == 'undefined')
 	var dsLang  = '&amp;lang=' + darkSkyLanguage;		// Subsequent arguments start with &, encoded so the PHP script doesn't think they're its arguments
 	var url     = 'https://api.forecast.io/forecast/' + darkSkyAPIKey + '/' + darkSkyLat + ',' + darkSkyLon + dsUnits + dsLang;
 
+	// Make sure Dark Sky is properly set up
+	if( darkSkyAPIKey == "Insert your APi key from http://developer.forecast.io here" )
+		return;
+
 	$.getJSON('proxy.php?url=' + encodeURI( url ), function(json, textStatus) {
 		// Update the current weather
 		var current       = json.currently;

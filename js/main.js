@@ -136,22 +136,31 @@ jQuery(document).ready(function($) {
 		var message = "";
 
 		// See if the current time matches a warning time
-		if( typeof warningTimes != 'undefined' ) {
-			for( var i=0; i < warningTimes.length; i++ ) {
-				var startTime = moment( warningTimes[i].startTime, "H:mm" );
-				if( !startTime.isValid() )
-					continue;
+		if( now.seconds() < 2 ) {																	// We only do this for the first 2 seconds of the minute, since it's a waste of time otherwise
+			if( typeof warningTimes != 'undefined' ) {
+				for( var i=0; i < warningTimes.length; i++ ) {
+					// Check if the alert is valid for this day
+					if( typeof warningTimes[i].days != 'undefined' ) {
+						if( warningTimes[i].days[ now.day() ] == false )
+							continue;
+					}
 
-				var endTime   = moment( warningTimes[i].endTime,   "H:mm" );
-				if( !endTime.isValid() )
-					continue;
+					// Make sure the current time lies between the start and end times
+					var startTime = moment( warningTimes[i].startTime, "H:mm" );
+					if( !startTime.isValid() )
+						continue;
 
-				if( endTime < startTime )
-					endTime.add( 1, "days" );
+					var endTime   = moment( warningTimes[i].endTime,   "H:mm" );
+					if( !endTime.isValid() )
+						continue;
 
-				if( (now.valueOf() > startTime.valueOf()) && (now.valueOf() < endTime.valueOf()) ) {
-					color   = warningTimes[i].color;
-					message = warningTimes[i].message;
+					if( endTime < startTime )
+						endTime.add( 1, "days" );
+
+					if( (now.valueOf() > startTime.valueOf()) && (now.valueOf() < endTime.valueOf()) ) {
+						color   = warningTimes[i].color;
+						message = warningTimes[i].message;
+					}
 				}
 			}
 		}

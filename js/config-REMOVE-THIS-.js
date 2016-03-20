@@ -19,8 +19,15 @@ var lang = 'en';
 //  It can be useful as a warning to let you know that it's time for you
 //  to leave before you miss the train, for example.  The time format is
 //  "HH:MM" with HH between 0-23 and MM between 0 and 59.
-var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", message:"Leave soon to catch the train" },
-                     { startTime:"17:50", endTime:"18:00", color:"FFA500", message:"Leave soon for the train"      } ];
+// Warnings can be triggered on certain days of the week.  The 'days'
+//  array consists of true/false values, with the indices of the array
+//  representing the days of the week starting with Sunday.  The warning
+//  will show up for each day marked as true.  If the array is or not
+//  provided, all days are assumed to be true.
+//                                                                                                              Sun    Mon    Tues   Wed   Thurs   Fri     Sat   
+var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", message:"Train to Boston",   days:[ false,  true,  true,  true,  true,  true,  false ] },
+                     { startTime:"17:50", endTime:"18:05", color:"FFA500", message:"Train from Boston", days:[ false,  true,  true,  true,  true,  true,  false ] },
+];
 
 
 //
