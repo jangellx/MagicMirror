@@ -124,16 +124,18 @@ jQuery(document).ready(function($) {
 	}
 //	checkVersion();
 
+	var timeMsg   = "";										// Declared outside of the function so that it persists
+	var timeColor = $('.time .warning').css('color');		// Same here
+
 	(function updateTime()
 	{
 		moment.locale(lang, {						// Language localization
 			calendar : null
 		});
 
-		var now     = moment();
-        var date    = now.format( dayBeforeMonth ? 'dddd, D MMMM, YYYY' : 'dddd, MMMM Do, YYYY');
-		var color   = $('.time .warning').css('color');
-		var message = "";
+		var now        = moment();
+        var date       = now.format( dayBeforeMonth ? 'dddd, D MMMM, YYYY' : 'dddd, MMMM Do, YYYY');
+		var foundMatch = false;
 
 		// See if the current time matches a warning time
 		if( now.seconds() < 2 ) {																	// We only do this for the first 2 seconds of the minute, since it's a waste of time otherwise
@@ -158,10 +160,16 @@ jQuery(document).ready(function($) {
 						endTime.add( 1, "days" );
 
 					if( (now.valueOf() > startTime.valueOf()) && (now.valueOf() < endTime.valueOf()) ) {
-						color   = warningTimes[i].color;
-						message = warningTimes[i].message;
+						timeColor  = warningTimes[i].color;
+						timeMsg    = warningTimes[i].message;
+						foundMatch = true;
 					}
 				}
+			}
+
+			if( !foundMatch ) {
+				timeMsg   = "";
+				timeColor = $('.time .warning').css('color');
 			}
 		}
 
@@ -174,7 +182,7 @@ jQuery(document).ready(function($) {
 		$('.time').html(																			// Ugly table here, but it gets the job done
 		    '<table>' +
 			    '<tr>' +
-				    '<td class="time" style="color:' + color + '" ' +								// Apply the color
+				    '<td class="time" style="color:' + timeColor + '" ' +								// Apply the color
 					    'rowspan=4 cellpadding=0>' + hoursMins +'</td>' +							// Time cell is four rows tall
 					'<td> </td>' + 																	// Empty cell next to it
 				'</tr><tr>' +
@@ -185,10 +193,10 @@ jQuery(document).ready(function($) {
 				'</tr>' +
 			'</table>');
 
-		if( message == "" )
+		if( timeMsg == "" )
 			var timeWarning = "";
 		else
-			var timeWarning = '<div style="color:' + color + '">&bull; ' + message + '</div>';
+			var timeWarning = '<div style="color:' + timeColor + '">&bull; ' + timeMsg + '</div>';
 		$('.timeWarning').updateWithText( timeWarning, 1000 );
 
 		setTimeout(function() {
