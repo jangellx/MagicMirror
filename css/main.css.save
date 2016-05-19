@@ -48,9 +48,10 @@ body, html {
 
 .left
 {
-	position:relative;
-	left: 0px;
+	position: absolute;
+	left: 15px;
 }
+
 .right
 {
 	position: absolute;
@@ -87,7 +88,7 @@ body, html {
 .bottom
 {
 	position: absolute;
-	bottom: 90px;
+	bottom: 50px;
 }
 
 .temp
@@ -258,7 +259,7 @@ body, html {
 .xxsmall2
 {
 	font-size: 12px;
-	letter-spacing: 1px;
+	letter-spacing: 0px;
 	font-family: "HelveticaNeue-Medium";
 }
 
@@ -448,11 +449,6 @@ body, html {
 
 .holidayCustom {
 	color: gold;
-}
-
-/* -- Hebcal -- */
-ul.hebcal-results li {
-	text-align: left;
 }
 
 /* -- MBTA -- */

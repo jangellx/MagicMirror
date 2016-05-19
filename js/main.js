@@ -112,9 +112,9 @@ jQuery(document).ready(function($) {
 	(function updateTime()
 	{
 		var now  = moment();
-        var date = now.format('dddd, MMMM Do, YYYY');
+        var date = now.format('ddd, MMM Do, YYYY');
 
-		var isWarningTime = (now.hour() == 7) && (now.minute() >= 10) && (now.minute() < 20);		// Between 7:10 and 7:20 AM, turn the color read
+		var isWarningTime = (now.hour() == 6) && (now.minute() >= 00) && (now.minute() < 30);		// Between 6:00 and 6:30 AM, turn the color read
 
 		$('.date').html(date);
 		$('.time').html(				// Ugly table here, but it gets the job done
