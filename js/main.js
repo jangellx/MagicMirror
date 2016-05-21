@@ -549,10 +549,12 @@ jQuery(document).ready(function($) {
 				wtCompliments = wtCompliments.concat( weatherCompliments[ curWeatherIcon ] );
 
 			// Look for compliments associated with the average temperature for the day
-			for( var i=0; i < temperatureCompliments.length; i++ ) {
-				if( temperatureCompliments[i].low < dailyAverageTemp ) {
-					wtCompliments = wtCompliments.concat( temperatureCompliments[i].messages );
-					break;
+			if( typeof temperatureCompliments != 'undefined') {
+				for( var i=0; i < temperatureCompliments.length; i++ ) {
+					if( temperatureCompliments[i].low < dailyAverageTemp ) {
+						wtCompliments = wtCompliments.concat( temperatureCompliments[i].messages );
+						break;
+					}
 				}
 			}
 
