@@ -299,8 +299,17 @@ jQuery(document).ready(function($) {
 	{
 		table = $('<table/>').addClass('xsmall').addClass('calendar-table');
 		opacity = 1;
-
-		for (var i in eventList) {
+		
+		// Figure out the maximum nmumber of entries that we're going to display
+		max = eventList.length;
+		if( typeof calenderMaxEvents != 'undefined') {
+			max = Math.min( max, calenderMaxEvents );
+		} else {
+			max = Math.min( max, 10 );
+		}
+		
+		// Display the events
+		for (var i=0; i < max; i++) {
 			var e = eventList[i];
 
 			var row = $('<tr/>').css('opacity',opacity);
