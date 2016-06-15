@@ -712,6 +712,9 @@ function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 //  Implementation inspired by http://stackoverflow.com/questions/20255903/change-the-body-background-image-with-fade-effect-in-jquery
 function updateBackground()
 {
+	if( typeof weatherBGImages == 'undefined')
+		return;
+
 	if( curWeatherIcon in weatherBGImages ) {
 		var bgImages = weatherBGImages[curWeatherIcon];
 		if( bgImages.length > 0 ) {
