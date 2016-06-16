@@ -32,12 +32,6 @@ body, html {
 	transition: opacity 1s eas-in-out;
 }
 
-/* -- Other colors -- */
-.black
-{
-        color: #000
-}
-
 /* -- Margins and Basic Structure -- */
 .top
 {
@@ -54,9 +48,10 @@ body, html {
 
 .left
 {
-	position:relative;
-	left: 0px;
+	position: absolute;
+	left: 15px;
 }
+
 .right
 {
 	position: absolute;
@@ -93,23 +88,12 @@ body, html {
 .bottom
 {
 	position: absolute;
-	bottom: 90px;
+	bottom: 50px;
 }
 
 .temp
 {
-	text-align:center;
-	line-height:90%
-}
-
-.tempfeelslike
-{
-	text-align:center;
-}
-
-.spacer
-{
-	height:10px
+	text-align:center
 }
 
 /* -- Temperature and Rain Graph -- */
@@ -123,13 +107,6 @@ body, html {
 .tempgraphDaylight
 {
 	fill:         #FFF;
-}
-
-.tempgraphFeelsLikeBar
-{
-	fill:         red;
-	fill-opacity: 0.4;
-    stroke:       none;
 }
 
 .tempgraphTempMark
@@ -178,13 +155,13 @@ body, html {
     fill:           none;
 	stroke:         #FFF;
 	stroke-width:   1;
-	stroke-opacity: 0.75;
+	stroke-opacity: 75%;
 }
 
 .tempgraphAccumArea
 {
     fill:         #CCC;
-	fill-opacity: 0.5;
+	fill-opacity: 50%;
 	stroke-width: 0;
 }
 
@@ -199,8 +176,8 @@ body, html {
 {
 	stroke-width:     3;
 /*	stroke-dasharray: 1,1;*/
-	stroke-opacity:   0.4;
-	fill-opacity:     0.5;
+	stroke-opacity:   40%;
+	fill-opacity:     50%;
 }
 
 .tempGraphHotColdLine.freezeLine
@@ -225,7 +202,7 @@ body, html {
     stroke:           white;
 	stroke-width:     1;
 /*	stroke-dasharray: 1,1;*/
-	stroke-opacity:   0.25;
+	stroke-opacity:   25%;
 }
 
 .tempGraphHourMarkerText
@@ -233,7 +210,7 @@ body, html {
     font-family:  HelveticaNeue;
     font-size:    8px;
     fill:         white;
-	fill-opacity: 0.35;
+	fill-opacity: 35%;
 	text-anchor:  begin;
 }
 
@@ -282,7 +259,7 @@ body, html {
 .xxsmall2
 {
 	font-size: 12px;
-	letter-spacing: 1px;
+	letter-spacing: 0px;
 	font-family: "HelveticaNeue-Medium";
 }
 
@@ -327,11 +304,6 @@ body, html {
 	line-height: 35px;
 }
 
-.light
-{
-	font-family: "HelveticaNeue-UltraLight";
-}
-
 /* -- Dimming -- */
 .xxdimmed
 {
@@ -347,6 +319,12 @@ body, html {
 {
 	color: #aaa;
 }
+
+.light
+{
+	font-family: "HelveticaNeue-UltraLight";
+}
+
 
 /* -- Weather Icons -- */
 .wi {
@@ -460,7 +438,7 @@ body, html {
 
 /* -- Calendar -- */
 .calendar-table {
-	font-size: 15px;
+	font-size: 14px;
 	line-height: 20px;
 	margin-top: 10px;
 }
@@ -471,11 +449,6 @@ body, html {
 
 .holidayCustom {
 	color: gold;
-}
-
-/* -- Hebcal -- */
-ul.hebcal-results li {
-	text-align: left;
 }
 
 /* -- MBTA -- */

@@ -11,6 +11,20 @@
 	</script>
 	<meta name="google" value="notranslate" />
 	<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+ 	<script src="http://api.tweecool.com/js/tweecool.min.js"></script>
+ 	 <script>
+ 	 $(document).ready(function() {
+     		 $('#tweecool').tweecool({
+      		//settings
+      		 username : 'PANYNJ_GWB',
+        	 limit : 2,
+		 profile_image : false
+
+ 	    	 });
+ 	 });
+	</script>
+
 </head>
 <body>
 
@@ -19,10 +33,13 @@
 	<div class="top left">
 		<div class="date small dimmed"></div>
 		<div class="time"></div>
-		<div class="timeWarning xxsmall"></div>
-		<div class="holidays xxsmall dimmed"></div>
-		<div class="calendar xxsmall"></div>
-		<div class="mbta xxxsmall dimmed"></div>
+		<!-- <div class="timeWarning xxsmall"></div> -->
+		<!-- <div class="holidays xxsmall dimmed"></div> -->
+		<div class="calendar"></div>
+		<div class="box xxsmall2 dimmed">
+		<script type="text/javascript" charset="utf-8" src="//www.hebcal.com/shabbat/?cfg=j&geonameid=5105262&m=50&b=18">
+		</script></div>
+		<!-- <div class="mbta xxxsmall dimmed"></div> -->
 	</div>
 
 	<div class="top right">
@@ -30,13 +47,26 @@
 		<div class="temp"></div>
 		<div class="tempfeelslike xxsmall"></div>
 		<div class="spacer"></div>
-		<div class="right" style="right:0px;">						<!-- Without this div, everything inside gets left aligned with the temperature instead of right aligned for some reason -->
+		<div class="right" style="right:0px;">	<!-- Without this div, everything inside gets left aligned with the temperature instead of right aligned for some reason -->
 		  <div class="tempgraph"></div>
 		  <!-- <div class="forecast small dimmed"></div>  Old table method; replaced with weekgraph SVG -->
 		  <div class="weekgraph"></div>
 		  <div class="summary xxsmall2 dimmed"></div>
 		  <div class="weatheralerts xxsmall2 dimmed"></div>
 		</div>
+		<div class="tempgraph"></div>
+		<!-- <div class="forecast small dimmed"></div>  Old table method; replaced with weekgraph SVG -->
+		<div class="weekgraph"></div>
+		<div class="summary xxsmall2 dimmed"></div>
+		<div class="weatheralerts xxsmall2 dimmed"></div>
+	</div>
+
+	<div class="farbottom right">
+		<a class="xxxsmall black" href="http://localhost/MagicMirror/MakeUp.html">MakeUp</a></div>
+	<!--	<div class="lastupdated luWeather xxxsmall xxdimmed"></div>
+		<div class="lastupdated luMBTA xxxsmall xxdimmed"></div>
+		<div class="lastupdated luRSS xxxsmall xxdimmed"></div>
+		<div class="lastupdated luHolidays xxxsmall xxdimmed"></div> -->
 	</div>
 
 	<div class="center-ver center-hor">
@@ -53,15 +83,12 @@
 		<div class="news medium"></div>
 	</div>
 
-	<div class="farbottom center-hor">
+	<!-- <div class="farbottom center-hor">
 		<div class="newsDots xxxsmall"></div>
-	</div>
+	</div> -->
 
-	<div class="farbottom right">
-		<div class="lastupdated luWeather xxxsmall xxdimmed"></div>
-		<div class="lastupdated luMBTA xxxsmall xxdimmed"></div>
-		<div class="lastupdated luRSS xxxsmall xxdimmed"></div>
-		<div class="lastupdated luHolidays xxxsmall xxdimmed"></div>
+	<div class="farbottom left-hor">
+		<div class="xxsmall"><div id="tweecool"></div></div>
 	</div>
 
 </div>
@@ -73,6 +100,8 @@
 <script src="js/config.js"></script>
 <script src="js/rrule.js"></script>
 <script src="js/d3.js"></script>
+<script src="js/tweecool-jquery-plugin/tweecool.js" type="text/javascript"></script>
+<script src="js/main.js?nocache=<?php echo md5(microtime()) ?>"></script>
 <!-- <script src="js/socket.io.min.js"></script> -->
 
 <!-- Our Stuff -->

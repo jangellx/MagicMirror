@@ -173,6 +173,10 @@ jQuery(document).ready(function($) {
 			}
 		}
 
+		var now  = moment();
+        var date = now.format('ddd, MMM Do, YYYY');
+
+		var isWarningTime = (now.hour() == 6) && (now.minute() >= 00) && (now.minute() < 30);		// Between 6:00 and 6:30 AM, turn the color read
 		// Figure out 12 vs 24 hour time
 		var hoursMins = now.format( clock12Hour ? 'h:mm' : 'H:mm' );
 		var ampm      = clock12Hour ? now.format('a') : '&nbsp;';									// &nbsp; keeps the cell from becoming 0 height

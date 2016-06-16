@@ -25,9 +25,9 @@ var lang = 'en';
 //  will show up for each day marked as true.  If the array is or not
 //  provided, all days are assumed to be true.
 //                                                                                                              Sun    Mon    Tues   Wed   Thurs   Fri     Sat   
-var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", message:"Train to Boston",   days:[ false,  true,  true,  true,  true,  true,  false ] },
+/*var warningTimes = [ { startTime: "6:15", endTime: "7:20", color:"FFA500", message:"Train to Boston",   days:[ false,  true,  true,  true,  true,  true,  false ] },
                      { startTime:"17:50", endTime:"18:05", color:"FFA500", message:"Train from Boston", days:[ false,  true,  true,  true,  true,  true,  false ] },
-];
+];*/
 
 
 //
@@ -35,9 +35,9 @@ var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", messa
 //
 
 // Set up your Dark Sky/forecast.io infromation and lat/lon here
-var darkSkyAPIKey  = "Insert your APi key from http://developer.forecast.io here";
-var darkSkyLat     = "41.000";
-var darkSkyLon     = "-71.000"
+var darkSkyAPIKey  = "d3f196cdfd9d1585488e4ad0a78b08dd";
+var darkSkyLat     = "41.889114";
+var darkSkyLon     = "-74.009260"
 
 // Units for values related to the weather, including temperatures and
 //  speeds.  Should be one of: us, si, ca, uk, uk2 and auto.  For details,
@@ -54,7 +54,7 @@ var tempDecimalPlaces = 0;
 var darkSkyLanguage = "en"
 
 // Number of hours to display in the temperature/rain graph
-var tempGraphRangeOfHours = 30;
+var tempGraphRangeOfHours = 12;
 
 //
 //--- MBTA ----------------------------------------------------------------------------------------
@@ -110,7 +110,6 @@ var holidaysCustom = [
 //			{ date: '01-02', name: 'Day After New Years' },
 ];
 
-
 //
 //--- RSS FEEDS -------------------------------------------------------------------------------------
 //
@@ -119,16 +118,19 @@ var holidaysCustom = [
 // var feed = 'http://www.wbur.org/feed'
 //
 // New Style supporting multiple feeds via a dictionary.  The key is displayed above the headline.
-var feedURLs = {'World'      : 'http://feeds.reuters.com/Reuters/worldNews',		// Reuters World
+var feedURLs = {'Israel'	:	'http://www.jpost.com/Rss/RssFeedsIsraelNews.aspx'};
+				/*'World'      : 	'http://feeds.reuters.com/Reuters/worldNews',		// Reuters World
 				'US'         : 'http://feeds.reuters.com/Reuters/domesticNews',		// Reuters US
 				'Politics'   : 'http://feeds.reuters.com/Reuters/PoliticsNews',		// Reuters Politics
 				'Technology' : 'http://feeds.reuters.com/Reuters/technologyNews',	// Reuters Technology
-				'Science'    : 'http://feeds.reuters.com/reuters/scienceNews' };	// Reuters Science
+				'Science'    : 'http://feeds.reuters.com/reuters/scienceNews' };	// Reuters Science 
+				*/
 
 
 //
 //--- COMPLIMENTS -------------------------------------------------------------------------------------
 //
+
 
 // Time of Day Compliments
 var morning = [
@@ -226,5 +228,5 @@ var weatherBGImages = { "clear-day"           : ["http://www.someURL.com/image1.
 // Background image tint color.  The higher the value, the dark the image, but the more readable the text is.
 var weatherBGTint = 0.75;
 
-// Number of seconds to cycle through the iamges for a given weather entry.
+// Number of seconds to cycle through the images for a given weather entry.
 var weatherVGCycleInterval = 60;
