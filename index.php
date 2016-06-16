@@ -51,12 +51,13 @@
 		<div class="weatheralerts xxsmall2 dimmed"></div>
 	</div>
 
-	<!-- <div class="farbottom right">
-		<div class="lastupdated luWeather xxxsmall xxdimmed"></div>
+	<div class="farbottom right">
+		<a class="xxxsmall black" href="http://localhost/MagicMirror/MakeUp.html">MakeUp</a></div>
+	<!--	<div class="lastupdated luWeather xxxsmall xxdimmed"></div>
 		<div class="lastupdated luMBTA xxxsmall xxdimmed"></div>
 		<div class="lastupdated luRSS xxxsmall xxdimmed"></div>
-		<div class="lastupdated luHolidays xxxsmall xxdimmed"></div>
-	</div> -->
+		<div class="lastupdated luHolidays xxxsmall xxdimmed"></div> -->
+	</div>
 
 	<div class="center-ver center-hor">
 		<!-- <div class="dishwasher light">Vaatwasser is klaar!</div> -->

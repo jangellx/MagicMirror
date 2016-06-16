@@ -32,6 +32,12 @@ body, html {
 	transition: opacity 1s eas-in-out;
 }
 
+/* -- Other colors -- */
+.black
+{
+        color: #000
+}
+
 /* -- Margins and Basic Structure -- */
 .top
 {
