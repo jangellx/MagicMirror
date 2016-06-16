@@ -74,6 +74,14 @@ var tempGraphRangeOfHours = 30;
 
 
 //
+//--- CALENDAR -------------------------------------------------------------------------------------
+//
+// The calendar .ics URL is set by directly modifying calendar.php, but there are some settings
+//  here for controlling the maximum number of entries that are displayed, for example.
+var calenderMaxEvents = 10;		// Maximum number of calendar events to display.  If undefined, this defaults to 10
+
+
+//
 //--- HOLIDAYS -------------------------------------------------------------------------------------
 //
 

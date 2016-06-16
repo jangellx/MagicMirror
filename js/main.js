@@ -129,7 +129,7 @@ jQuery(document).ready(function($) {
 
 	(function updateTime()
 	{
-		moment.locale(lang, {						// Language localization
+		moment.updateLocale(lang, {						// Language localization
 			calendar : null
 		});
 
@@ -211,7 +211,7 @@ jQuery(document).ready(function($) {
         	eventList = [];
 
 			// Clear any previous calendar formatting customizations
-			moment.locale(lang, {						// Language localization
+			moment.updateLocale(lang, {						// Language localization
 				calendar : null
 			});
 
@@ -269,8 +269,8 @@ jQuery(document).ready(function($) {
                     options.dtstart = e.startDate;
                     var rule = new RRule(options);
                     
-                    // TODO: don't use fixed end date here, use something like now() + 1 year
-                    var dates = rule.between(new Date(), new Date(2016,11,31), true, function (date, i){return i < 10});
+					// Get events up to one year in the future
+                    var dates = rule.between(new Date(), moment().add(1, "years").toDate(), true, function (date, i){return i < 10});
                     for (date in dates) {
                         var dt = new Date(dates[date]);
                         var days = moment(dt).diff(moment(), 'days');
@@ -299,8 +299,17 @@ jQuery(document).ready(function($) {
 	{
 		table = $('<table/>').addClass('xsmall').addClass('calendar-table');
 		opacity = 1;
-
-		for (var i in eventList) {
+		
+		// Figure out the maximum nmumber of entries that we're going to display
+		max = eventList.length;
+		if( typeof calenderMaxEvents != 'undefined') {
+			max = Math.min( max, calenderMaxEvents );
+		} else {
+			max = Math.min( max, 10 );
+		}
+		
+		// Display the events
+		for (var i=0; i < max; i++) {
 			var e = eventList[i];
 
 			var row = $('<tr/>').css('opacity',opacity);
@@ -403,7 +412,7 @@ jQuery(document).ready(function($) {
 				prevDate.add( -1, "days" ); 			// To make sure that we get today as well as future dates
 
 				// Customize the locale for holidays
-				moment.locale(lang, {						// Language localization
+				moment.updateLocale(lang, {						// Language localization
 					calendar : {							// Calendar localization used for upcoming holidays.  Should really be localized too...
 						lastDay : '[Yesterday was] ' ,
 						sameDay : '[Today is] ',
@@ -549,10 +558,12 @@ jQuery(document).ready(function($) {
 				wtCompliments = wtCompliments.concat( weatherCompliments[ curWeatherIcon ] );
 
 			// Look for compliments associated with the average temperature for the day
-			for( var i=0; i < temperatureCompliments.length; i++ ) {
-				if( temperatureCompliments[i].low < dailyAverageTemp ) {
-					wtCompliments = wtCompliments.concat( temperatureCompliments[i].messages );
-					break;
+			if( typeof temperatureCompliments != 'undefined') {
+				for( var i=0; i < temperatureCompliments.length; i++ ) {
+					if( temperatureCompliments[i].low < dailyAverageTemp ) {
+						wtCompliments = wtCompliments.concat( temperatureCompliments[i].messages );
+						break;
+					}
 				}
 			}
 
