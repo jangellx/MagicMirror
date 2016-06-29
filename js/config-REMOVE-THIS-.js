@@ -37,7 +37,7 @@ var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", messa
 // Set up your Dark Sky/forecast.io infromation and lat/lon here
 var darkSkyAPIKey  = "Insert your APi key from http://developer.forecast.io here";
 var darkSkyLat     = "41.000";
-var darkSkyLon     = "-71.000"
+var darkSkyLon     = "-71.000";
 
 // Units for values related to the weather, including temperatures and
 //  speeds.  Should be one of: us, si, ca, uk, uk2 and auto.  For details,

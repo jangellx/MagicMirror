@@ -182,7 +182,7 @@ jQuery(document).ready(function($) {
 		$('.time').html(																			// Ugly table here, but it gets the job done
 		    '<table>' +
 			    '<tr>' +
-				    '<td class="time" style="color:' + timeColor + '" ' +								// Apply the color
+				    '<td class="time" style="color:' + timeColor + '" ' +							// Apply the color
 					    'rowspan=4 cellpadding=0>' + hoursMins +'</td>' +							// Time cell is four rows tall
 					'<td> </td>' + 																	// Empty cell next to it
 				'</tr><tr>' +
