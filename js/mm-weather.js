@@ -339,7 +339,8 @@ function updateWeatherForcast_UpdateWeeklyGraph( dailyData ) {
 		}
 
 		weekGraphSVG.select( ".tempGraphHotColdLine." + className).attr("x1", tempPoint ).attr("y1", marginT + lineMargin + barShift )
-																  .attr("x2", tempPoint ).attr("y2", h - marginB );
+																  .attr("x2", tempPoint ).attr("y2", h - marginB )
+																  .attr( "opacity", ((tempPoint > marginL) && (tempPoint < (w - marginR))) ? 1.0 : 0.0 );
 
 /*			// Add/update the icon -- these don't really work well here
 		if( weekGraphSVG.select( ".tempGraphHotColdLine.lineIcon." + className ).empty() ) {
@@ -354,8 +355,7 @@ function updateWeatherForcast_UpdateWeeklyGraph( dailyData ) {
 }
 
 // Draw the weather graph.  This is similar to the graph drawn in the Weather Underground iOS app,
-//  with the next 24 hours temperature curve overlaid over the chance of rain.  We take advantage
-//  of Dark Sky's confidence to draw a wider or thinner rain line.
+//  with the next 24(ish) hours temperature curve overlaid over the chance of rain.
 function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 	// Create the SVG, if needed.  We just reuse the SVG instead of creating a new one each time,
 	//  and animate the values within it
@@ -543,9 +543,19 @@ function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 		// Create dots for the temp, scaling to limit the min/max temps to the bounds of the view
 		//  Note that hourly data includes 48 hous worth, not 24.  We only draw 12 dots to keep
 		//  things from getting too cluttered, but graph 24.
-		var tempYScale = d3.scale.linear().domain([ d3.min( hourlyData, function(d) { return Math.min( d.temperature, d.apparentTemperature ) } ),
-													d3.max( hourlyData, function(d) { return Math.max( d.temperature, d.apparentTemperature ) } ) ])
-										  .range([ h-marginB, marginT ]);
+		var maxRealTemp     = d3.max( hourlyData, function(d) { return Math.max( d.temperature,         d.temperature         ) } );
+		var maxApparentTemp = d3.max( hourlyData, function(d) { return Math.max( d.apparentTemperature, d.apparentTemperature ) } );
+		
+		var minGraphTemp = d3.min( hourlyData, function(d) { return Math.min( d.temperature, d.apparentTemperature ) } );
+		var maxGraphTemp = Math.max( maxRealTemp, maxApparentTemp );
+
+		var tempYScale   = d3.scale.linear().domain([ minGraphTemp, maxGraphTemp ])
+						  				  .range([ h-marginB, marginT ]);
+
+		if( maxApparentTemp > maxRealTemp ) {
+			tempYScale = d3.scale.linear().domain([ minGraphTemp, maxGraphTemp ])
+						               	  .range([ h-marginB, marginT - Math.min( tempYScale( maxRealTemp ) - tempYScale( maxApparentTemp ), marginT ) ]);
+		}
 
 		// Draw lines from the apparent "feels like" temperature to the actual temperature
 		// - Add rectanges for each line
