@@ -619,9 +619,16 @@ jQuery(document).ready(function($) {
 		$.getJSON( url, function(jsonRSS, textStatus) {
 			if( jsonRSS.query.results != null ) {
 				// Success; get the list of articles
+				var oldestDate = moment().subtract( feedMaxAge.days, "days" ).subtract( feedMaxAge.hours, "hours" );
 				var stories = [];
-				for (var i in jsonRSS.query.results.item)
-					stories.push( jsonRSS.query.results.item[i].title );
+				for (var i in jsonRSS.query.results.item) {
+					// Skip articles older than a certain time
+					//  pubDate string is "Tue, 05 Jul 2016 14:25:29 -0400", so we decode that
+					var storyDate = moment( jsonRSS.query.results.item[i].pubDate, "ddd, DD MMM YYYY HH:mm:ss Z" );
+					if( oldestDate.diff( storyDate ) < 0 ) {
+						stories.push( jsonRSS.query.results.item[i].title );
+					}
+				}
 
 				news[ index ] = stories;
 
@@ -712,11 +719,16 @@ jQuery(document).ready(function($) {
 		var newsFeed = news[ newsFeedIndex ];
 		newsStory = newsFeed[ newsStoryIndex ];
 
-		$('.news').updateWithText(newsStory,2000);
+		var nextTimeout = 1000;							// Used in error cases where newsStory is undefined for some reason
+		if( typeof newsStory != 'undefined') {
+			$('.news').updateWithText( newsStory, 2000 );
+
+			nextTimeout = 5500 + (newsStory.length * 20);
+		}
 
 		// Set up for the next story
 		newsStoryIndex++;
-		setTimeout( showNews, 5500 + (newsStory.length * 20) );			// Length of the headline modifies how long it stays on screen
+		setTimeout( showNews, nextTimeout  );			// Length of the headline modifies how long it stays on screen
 	})();
 
 });

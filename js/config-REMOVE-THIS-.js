@@ -125,6 +125,10 @@ var feedURLs = {'World'      : 'http://feeds.reuters.com/Reuters/worldNews',		//
 				'Technology' : 'http://feeds.reuters.com/Reuters/technologyNews',	// Reuters Technology
 				'Science'    : 'http://feeds.reuters.com/reuters/scienceNews' };	// Reuters Science
 
+// Maximum age for an article.  Older articles are not shown.  Days and/or hours can be used to
+// filter old articles out.
+var feedMaxAge = { days: 2, hours: 0 };
+
 
 //
 //--- COMPLIMENTS -------------------------------------------------------------------------------------
