@@ -669,10 +669,10 @@ jQuery(document).ready(function($) {
 			}
 
 			// Check for the last story in the feed
-			if( newsFeed.length == newsStoryIndex ) {
+			if( newsFeed.length >= newsStoryIndex ) {		// newsStoryIndex can become greater than the array if the story count updated behind the scenes
 				newsStoryIndex = 0;
 
-				if( ++newsFeedIndex == news.length ) {
+				if( ++newsFeedIndex >= news.length ) {
 					newsFeedIndex = 0;
 					continue;
 				}
