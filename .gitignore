@@ -39,3 +39,4 @@ Thumbs.db
 # Magic Mirror Config #
 #######################
 js/config.js
+js/mm-mta-orig.js
