@@ -23,10 +23,10 @@ a proxy.php that I modified from the [unofficial forecast.io Javascript library 
 - Added MBTA (Boston area) train alerts from the [http://realtime.mbta.com/](MBTA Realtime API).  ThosThis API requires getting your own key (easy to do) from the [http://realtime.mbta.com/Portal/Account/Register](MBTA developer site) and setting it and the route you want alerts for in config.js.  Only current alerts are shown, with minor alerts shown with white icons instead of red.  You get 10000 requests a day, so I update every five minutes.  This uses the smae proxy.php as the forecast.io implementation above due to issues I had getting JSONP to work.
 - Thanks to Ken Balestrieri, there is experimantal MTA (NYC area) train alert support.  As with MBTA, you need to get an API key from the [http://datamine.mta.info/](MTA developer website), which is free and easy.  This also updates every 5 minutes, and supports alerts between two stations, reversing the order of the stations after a certain time of day (ie: alerts on the way to work vs. on the way home).
 - Added holidays via [http://holidayapi.com/](HolidayAPI), augmenting it with filters and custom holidays
-(which draw in gold), both of which are set through the config.
+(which draw in gold), both of which are set through the config.  This also requires a free API key.
 - Configurable "alert times", where the time changes color and displays a message for a defined time period, such as "hurry up and leave soon or you'll miss the train!"
 - Customizable weather-based "compliments" based on the current weather and the average temperature over the next 12 hours.
-- Added support for multiple RSS feeds.
+- Added support for multiple RSS feeds and skipping stories older than a certain amount of time.
 - Removed the fractional temperatures.
 - Added daily and weekly summary text from forecast.io.
 - Added an extra delay to the RSS headlines based on the length of the headline (20ms per letter).
