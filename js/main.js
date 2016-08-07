@@ -337,6 +337,10 @@ jQuery(document).ready(function($) {
 //		holidayThisDay = today.add( 1, "days" )
 //		if( holidayThisDay == today.day() ) {
 
+		// Make sure holidayapi.com is properly set up
+		if( holidayAPIKey == "Insert your API key from from http://holidayapi.com here" )
+			return;
+
 		if( holidayThisDay == moment().day() ) {
 			setTimeout(function() {
 				updateHolidays();
@@ -346,7 +350,7 @@ jQuery(document).ready(function($) {
 		}
 
 		var now        = moment();
-		var holidayURL = 'http://holidayapi.com/v1/holidays?country=' + holidayCountry + '&year=';
+		var holidayURL = 'https://holidayapi.com/v1/holidays?key=' + holidayAPIKey+ '&country=' + holidayCountry + '&year=';
 
 		$.getJSON( holidayURL + now.format('YYYY'), function(jsonDate, textStatus) {
 			// Success; update the holiday string, even if it's just empty
@@ -424,11 +428,18 @@ jQuery(document).ready(function($) {
 					}
 				});
 
+				// Loop through the holidays themselves
 				for( var key in holidays ) {
 					var thisHoliday = holidays[key];
-					var futureDate = moment( thisHoliday[0].date, 'YYYY-MM-DD' );
+
+					//  Skip public/federal holidays, as set in the config
+					if( (holidayShowPublic && !thisHoliday[0].public) && (holidayShowFederal && thisHoliday[0].public) )
+						continue;
+
+					// Make sure the date is in the future, using observed or actual dates for the test based on the config flag
+					var futureDate = moment( holidayShowObservedTimes ? thisHoliday[0].observed : thisHoliday[0].date, 'YYYY-MM-DD' );
 					if( doDateTest && (prevDate > futureDate) )
-							continue;
+						continue;
 
 					// Filter out holidays we don't care about
 					var i, j;
@@ -465,7 +476,7 @@ jQuery(document).ready(function($) {
 
 					// Add this holiday
 					holidayText += buildHolidayString( thisHoliday, futureDate );
-
+					
 					// If we've hit our limit, stop
 					if( holidaysShown == numFound )
 						break;

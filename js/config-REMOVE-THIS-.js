@@ -35,7 +35,7 @@ var warningTimes = [ { startTime: "7:10", endTime: "7:20", color:"FFA500", messa
 //
 
 // Set up your Dark Sky/forecast.io infromation and lat/lon here
-var darkSkyAPIKey  = "Insert your APi key from http://developer.forecast.io here";
+var darkSkyAPIKey  = "Insert your API key from http://developer.forecast.io here";
 var darkSkyLat     = "41.000";
 var darkSkyLon     = "-71.000";
 
@@ -84,12 +84,14 @@ var calenderMaxEvents = 10;		// Maximum number of calendar events to display.  I
 //
 //--- HOLIDAYS -------------------------------------------------------------------------------------
 //
-
-// Country code for holidays, as per holidayapi.com
-var holidayCountry = "US";
-
-// Total number of holidays to display
-var holidaysShown  = 3;
+// You'll need an API key for the holiday list.  This can be obtained for free from http://holidayapi.com .
+// The other settings can be left at their defaults or configured as desired.
+var holidayAPIKey            = "Insert your API key from from http://holidayapi.com here";
+var holidayCountry           = "US";										// Country code for holidays, as per holidayapi.com
+var holidayShowPublic        = true;										// Set to false to hide publicly recognized holidays
+var holidayShowFederal       = true;										// Set to false to hide federal (bank) holidays
+var holidayShowObservedTimes = false;										// Set to true to show the observed date of a holiday instad of its actual date
+var holidaysShown            = 3;											// Total number of holidays displayed
 
 // Holiday filter
 //  Add dates you don't want to see in the fomat of "MM-DD".  This can
