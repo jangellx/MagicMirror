@@ -12,8 +12,6 @@
 //var mtaEndStation = "NYK"; 
 //var mtaSwapStationsAtHour = 15; // Hour in the day (ie: 15 for 3 PM) 
 
-mbtaServiceName = "LIRR service";
-
 // Function to convert datetime to 12 hour format 
 function hours12(date) {
   return (date.getHours() + 24) % 12 || 12;};
@@ -22,6 +20,9 @@ function updateMTAServiceAlerts() {
 	// Do nothing if we have no API key
 	if( typeof mtaAPIKey == 'undefined')
 		return;
+
+	// Override the train service name
+	mbtaServiceName = "LIRR service";
 
 	//Set home station
 	var sStation = "CLP";
