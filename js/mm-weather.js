@@ -4,6 +4,8 @@
 //  current weather.
 //
 
+var haveConvertedTemperatureCompliments = false;	// On first run, this tells us that we need to convert the temperature compliments to the local unit system
+
 // Convert from KPH to the Beufort scale
 function kmh2beaufort(kmh)
 {
@@ -61,6 +63,22 @@ if( typeof tempDecimalPlaces == 'undefined')
 		var feelsLikeTemp = roundTemp(current.apparentTemperature);
 		var wind          = roundVal(current.windSpeed);
 
+		if( !haveConvertedTemperatureCompliments && (typeof tempartureComplimentsInC != 'undefined') ) {
+			// Convert to the local temperature unit system if not already in that
+			if( (json.flags.units == "us") && tempartureComplimentsInC ) {
+				for( var i=0; i < temperatureCompliments.length; i++ ) {
+					temperatureCompliments[i].low = temperatureCompliments[i].low * 1.8 + 32;
+				}
+			} else if( (json.flags.units != "us") && !tempartureComplimentsInC ) {
+				for( var i=0; i < temperatureCompliments.length; i++ ) {
+					temperatureCompliments[i].low = (temperatureCompliments[i].low - 32) / 1.8;
+				}
+			}
+			
+			haveConvertedTemperatureCompliments = true;
+		}
+
+		// Setup variables
 		curWeatherIcon = current.icon;							// Stored for use by weather-related background images
 		var iconClass  = "wi-forecast-io-" + current.icon;
 		var icon       = $('<span/>').addClass('icon').addClass('dimmed').addClass('wi').addClass(iconClass);

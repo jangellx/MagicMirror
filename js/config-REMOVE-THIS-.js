@@ -183,6 +183,7 @@ var weatherCompliments = { "clear-day"           : ["Bright and sunny today!", "
 //  a temperature range.  The array is walked from the highest temperatures
 //  to the lowest until a match is found for average temperature over the
 //  next 12 hours.
+var tempartureComplimentsInC = false;			// If true, the "low" tempertures below are in celcius; if true, it's in fahrenheight
 var temperatureCompliments = [ {low:  83, messages:["Hot one today!", "Try to keep cool!"] },
                                {low:  60, messages:["It's warm out today!"] },
 						       {low:  33, messages:["Don't forget a jacket!"] },
