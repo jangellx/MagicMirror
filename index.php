@@ -77,6 +77,7 @@
 
 <!-- Our Stuff -->
 <script src="js/main.js?nocache=<?php echo md5(microtime()) ?>"></script>
+<script src="js/mm-holidays.js?nocache=<?php echo md5(microtime()) ?>"></script>
 <script src="js/mm-weather.js?nocache=<?php echo md5(microtime()) ?>"></script>
 <script src="js/mm-mbta.js?nocache=<?php echo md5(microtime()) ?>"></script>
 <script src="js/mm-mta.js?nocache=<?php echo md5(microtime()) ?>"></script>			<!-- This must be included after mm-mbta.js -->
