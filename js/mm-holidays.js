@@ -57,7 +57,7 @@ holidays["US"] = [
 	{ name:"Veterans Day",                        date:"11/11" },
 	{ name:"Thanksgiving",                        pattern:{ day:"Thursday", which:"fourth",  month:"11" } },
 	{ name:"Hanukkah Begins",                     table:hanukkahBeginsDates},
-	{ name:"Christmas Eve",                       date:"12/23" },
+	{ name:"Christmas Eve",                       date:"12/24" },
 	{ name:"Christmas Day",                       date:"12/25" },
 	{ name:"New Years Eve",                       date:"12/31" },
 ];
@@ -219,6 +219,22 @@ function GetHolidays( year, country ) {
 		return 1;
 	});
 
+	// Merge identical dates into the same date
+	var d0, d1;
+    d0 = hList[0];
+
+	for( var i=1; i < hList.length; i++ ) {
+		d1 = hList[i];
+		if( d0[0].date == d1[0].date ) {
+			d0.push( d1[0] );
+			hList.splice( i, 1 );
+			i--;
+
+		} else {
+			d0 = d1;
+		}
+	}
+	
 	// Return
 	dates.status   = 200;
 	dates.holidays = hList;
