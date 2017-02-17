@@ -6,7 +6,7 @@ it on [his site](http://michaelteeuw.nl/tagged/magicmirror).  Even better, he pr
 and all of his code so that you can build your own.
 
 I took that challenge and constructed my Magic Mirror for our bathroom using a 32" LCD HDTV and a 31"x24" piece
-of two way glass, glueing the glass to the fromt of the case so that there is no border.  I also installed
+of two way glass, glueing the glass to the front of the case so that there is no border.  I also installed
 ShairPort so that Apple AirPlay can be used to play music through the TV's speakers.  A bonus is that the
 warm LCD doesn't fog when in the bathroom.  [Details on my build can be found on my website](http://www.tmproductions.com/projects-blog/2015/8/29/magic-mirror).
 
