@@ -112,7 +112,7 @@ var holidayFilter = [
 //  array must exist, but can be empty.
 var holidaysCustom = [
 			{ date: '05-25', name: 'Towel Day'				},
-			{ date: '09-11', name: 'Talk Like a Pirate Day'	},
+			{ date: '09-19', name: 'Talk Like a Pirate Day'	},
 ];
 
 
