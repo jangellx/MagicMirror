@@ -108,9 +108,11 @@ if( typeof tempDecimalPlaces == 'undefined')
 //			updateWeatherForcast_UpdateWeeklyTable( json );
 		updateWeatherForcast_UpdateWeeklyGraph( json.daily.data );
 
-		// Update the summary text
-		$('.summary').updateWithText(json.hourly.summary + ' ' + json.daily.summary /*+ '<br><br>' +
-									 '<span class="xxxsmall xxdimmed">last updated: ' + moment().format('h:mm a ddd MMM D YYYY') + '</span>'*/, 1000);
+		if( showWeatherSummary ) {
+			// Update the summary text
+			$('.summary').updateWithText(json.hourly.summary + ' ' + json.daily.summary /*+ '<br><br>' +
+										 '<span class="xxxsmall xxdimmed">last updated: ' + moment().format('h:mm a ddd MMM D YYYY') + '</span>'*/, 1000);
+		}
 
 		$('.luWeather').updateWithText('weather: ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
@@ -141,7 +143,7 @@ if( typeof tempDecimalPlaces == 'undefined')
 })();
 
 // Update the wearther alerts.
-// - Really, this isn't worth it; the alerats are huge walls of text, sand don't fit well in the mirror.
+// - Really, this isn't worth it; the alerts are huge walls of text, and don't fit well in the mirror.
 function updateWeather_Alerts( json ) {
 	var weatherAlerts = "";
 	if( json.alerts.length > 0 ) {
@@ -183,7 +185,7 @@ function updateWeatherForcast_UpdateWeeklyTable( json ) {
 }
 
 // Draw the weekly forecast as a graph, similar to how Dark Sky does.  Each day is drawn as a bar
-// prepresenting the low and high temperature.
+// representing the low and high temperature.
 function updateWeatherForcast_UpdateWeeklyGraph( dailyData ) {
 	var marginL       = 85 + (tempDecimalPlaces * 10);				// Add 10 pixels per extra decimal place so that the temperature labels fit
 	var marginR       = 17 + (tempDecimalPlaces * 10);				// Same here

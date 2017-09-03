@@ -56,6 +56,9 @@ var darkSkyLanguage = "en"
 // Number of hours to display in the temperature/rain graph
 var tempGraphRangeOfHours = 30;
 
+// Set to "false" if you don't want a textual summary of the week's weather.
+var showWeatherSummary = true;
+
 //
 //--- MBTA ----------------------------------------------------------------------------------------
 // Boston area train alerts
