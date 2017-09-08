@@ -194,6 +194,8 @@ function updateMBTAServiceAlerts() {
 		if( mbtaAlerts.length == 0 ) {
 			// No alerts; just clear the block and restart the timer
 			$('.mbta').updateWithText('', 1000);
+			$('.luMBTA').updateWithText('mbta (no alerts):' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
+
 			setTimeout( updateMBTAServiceAlerts, 300000);		// 5 minutes
 
 		} else {
