@@ -33,6 +33,7 @@ var passoverBeginDates = [], passoverEndDates = [];
 var yomKippurDates = [];
 var roshHashanaDates = [];
 var hanukkahBeginsDates = [];
+var dstBeginDates = [], dstEndDates = [];
 
 // Reference for US holidays: https://www.law.cornell.edu/uscode/text/5/6103
 holidays["US"] = [
@@ -60,6 +61,8 @@ holidays["US"] = [
 	{ name:"Christmas Eve",                       date:"12/24" },
 	{ name:"Christmas Day",                       date:"12/25" },
 	{ name:"New Years Eve",                       date:"12/31" },
+	{ name:"Daylight Saving Time Begins",         table:dstBeginDates},
+	{ name:"Daylight Saving Time Ends",           table:dstEndDates},
 ];
 
 // Easter function from http://stackoverflow.com/questions/1284314/easter-date-in-javascript
@@ -141,6 +144,16 @@ hanukkahBeginsDates[23] =  "12/8";
 hanukkahBeginsDates[24] = "12/26";
 hanukkahBeginsDates[25] = "12/15";
 
+// Daylight Saving Time start/end times, using a tablet.
+dstBeginDates[17] = "3/12";		dstEndDates[17] = "11/5";
+dstBeginDates[18] = "3/11";		dstEndDates[18] = "11/4";
+dstBeginDates[19] = "3/10";		dstEndDates[19] = "11/3";
+dstBeginDates[20] = "3/8";		dstEndDates[20] = "11/1";
+dstBeginDates[21] = "3/14";		dstEndDates[21] = "11/7";
+dstBeginDates[22] = "3/13";		dstEndDates[22] = "11/6";
+dstBeginDates[23] = "3/12";		dstEndDates[23] = "11/5";
+dstBeginDates[24] = "3/10";		dstEndDates[24] = "11/3";
+dstBeginDates[25] = "3/9";		dstEndDates[25] = "11/2";
 
 // Build a table containing all dates for a given year in the same format as HolidayAPI
 //  Year is two digits (ie: 16), and country is a country code (ie: "us").
