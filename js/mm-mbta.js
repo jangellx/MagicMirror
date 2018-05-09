@@ -6,55 +6,59 @@
 //  As with the weather, we again use the proxy to get the page.  MBTA does support
 //  JSONP, but for whatever reason I just couldn't get that to work.
 
+// MBTA Service Alerts, V3.  V2 is discontinued, and V3 has a much higher call limit.
+//  As with the weather, we again use the proxy to get the page.
+
 var mbtaAlerts          = [];				// List of MBTA alerts as HTML, one for each alert we have a JSON request for
-var mbtaAlertsPending   = 0;				// Number of JSON requests for MBTA alerts that we're waiting on.  Once this gets to 0, we update the div with the contents of the mbtaAlerts
 var mbtaServiceName     = "MBTA service";	// The name of the service, displayed in the title as "n MBTA service alerts".  Provided as a variable so that it can be replaced for other transit services.
 
 // See https://groups.google.com/forum/#!topic/massdotdevelopers/mco5gtgPEP4 for where this
 //  list of effects came from.  The key is the effect_name, and the value is the class defined
 //  in mbta-icons.css
 var mbtaIconsKey = {
-	'Accessibility'     :'mbtai-key_accessibility',
-	'Amber Alert'       :'mbtai-key_other',
-	'Cancellation'      :'mbtai-key_canceltrip',
-	'Delay'             :'mbtai-key_delay',
-	'Detour'            :'mbtai-key_detour',
-	'Dock Closure'      :'mbtai-key_closure',
-	'Dock Issue'        :'mbtai-key_other',
-	'Extra Service'     :'mbtai-key_extraservice',
-	'Policy Change'     :'mbtai-key_other',
-	'Schedule Change'   :'mbtai-key_schedchange',
-	'Service Change'    :'mbtai-key_other',
-	'Shuttle'           :'mbtai-key_shuttlebus',
-	'Snow Route'        :'mbtai-key_snowroute',
-	'Station Closure'   :'mbtai-key_closure',
-	'Station Issue'     :'mbtai-key_other',
-	'Stop Closure'      :'mbtai-key_closure',
-	'Stop Move'         :'mbtai-key_other',
-	'Suspension'        :'mbtai-key_noservice',
-	'Track Change'      :'mbtai-key_other',
+	'ACCESSIBILITY'     :'mbtai-key_accessibility',
+	'AMBER_ALERT'       :'mbtai-key_other',
+	'CANCELLATION'      :'mbtai-key_canceltrip',
+	'DELAY'             :'mbtai-key_delay',
+	'DETOUR'            :'mbtai-key_detour',
+	'DOCK_CLOSURE'      :'mbtai-key_closure',
+	'DOCK_ISSUE'        :'mbtai-key_other',
+	'EXTRA_SERVICE'     :'mbtai-key_extraservice',
+	'POLICY_CHANGE'     :'mbtai-key_other',
+	'SCHEDULE_CHANGE'   :'mbtai-key_schedchange',
+	'SERVICE_CHANGE'    :'mbtai-key_other',
+	'SHUTTLE'           :'mbtai-key_shuttlebus',
+	'SHOW_ROUTE'        :'mbtai-key_snowroute',
+	'STATION_CLOSURE'   :'mbtai-key_closure',
+	'STATION_ISSUE'     :'mbtai-key_other',
+	'STOP_CLOSURE'      :'mbtai-key_closure',
+	'STOP_MOVE'         :'mbtai-key_other',
+	'SUSPENSION'        :'mbtai-key_noservice',
+	'TRACK_CHANGE'      :'mbtai-key_other',
+	'UNKNOWN_CAUSE'     :'mbtai-key_other',
 }
 
 var mbtaIconsRed = {
-	'Accessibility'     :'mbtai-red_accessibility',
-	'Amber Alert'       :'mbtai-red_other',
-	'Cancellation'      :'mbtai-red_canceltrip',
-	'Delay'             :'mbtai-red_delay',
-	'Detour'            :'mbtai-red_detour',
-	'Dock Closure'      :'mbtai-red_closure',
-	'Dock Issue'        :'mbtai-red_other',
-	'Extra Service'     :'mbtai-red_extraservice',
-	'Policy Change'     :'mbtai-red_other',
-	'Schedule Change'   :'mbtai-red_schedchange',
-	'Service Change'    :'mbtai-red_other',
-	'Shuttle'           :'mbtai-red_shuttlebus',
-	'Snow Route'        :'mbtai-red_snowroute',
-	'Station Closure'   :'mbtai-red_closure',
-	'Station Issue'     :'mbtai-red_other',
-	'Stop Closure'      :'mbtai-red_closure',
-	'Stop Move'         :'mbtai-red_other',
-	'Suspension'        :'mbtai-red_noservice',
-	'Track Change'      :'mbtai-red_other',
+	'ACCESSIBILITY'     :'mbtai-red_accessibility',
+	'AMBER_ALERT'       :'mbtai-red_other',
+	'CANCELLATION'      :'mbtai-red_canceltrip',
+	'DELAY'             :'mbtai-red_delay',
+	'DETOUR'            :'mbtai-red_detour',
+	'DOCK_CLOSURE'      :'mbtai-red_closure',
+	'DOCK_ISSUE'        :'mbtai-red_other',
+	'EXTRA_SERVICE'     :'mbtai-red_extraservice',
+	'POLICY_CHANGE'     :'mbtai-red_other',
+	'SCHEDULE_CHANGE'   :'mbtai-red_schedchange',
+	'SERVICE_CHANGE'    :'mbtai-red_other',
+	'SHUTTLE'           :'mbtai-red_shuttlebus',
+	'SHOW_ROUTE'        :'mbtai-red_snowroute',
+	'STATION_CLOSURE'   :'mbtai-red_closure',
+	'STATION_ISSUE'     :'mbtai-red_other',
+	'STOP_CLOSURE'      :'mbtai-red_closure',
+	'STOP_MOVE'         :'mbtai-red_other',
+	'SUSPENSION'        :'mbtai-red_noservice',
+	'TRACK_CHANGE'      :'mbtai-red_other',
+	'UNKNOWN_CAUSE'     :'mbtai-red_other',
 }
 
 // Once all the alerts have been updated, we refresh the div
@@ -101,96 +105,69 @@ function updateMBTAServiceAlerts_UpadteDiv()
 
 // Get the information for a single alert.  We wrap this in a function so that we can fake
 //  passing variables (the array index, alert ID and default text) to our JSON callback.
-function updateMBTAServiceAlerts_UpadteOne( index, alertID, defaultText )
+function updateMBTAServiceAlerts_UpadteOne( index, jsonAlert )
 {
 	var alerticon, alertTime, alertSeverity, alertText, alertDir, isOngoing = false;
 
-	var alertURL = 'proxy.php?url=http://realtime.mbta.com/developer/api/v2/ALERTBYID%3Fapi_key=' + mbtaAPIKey + '%26id=' + alertID + '%26format=json';
-	$.getJSON(alertURL, function(jsonAlert, textStatus) {
-		// Success; use the information provided, but skip ongoing alerts
+	if( (jsonAlert.lifecycle == "ONGOING") || (jsonAlert.lifecycle == "ONGOING-UPCOMING") || (jsonAlert.timeframe == "ongoing") ) {
+		// Ongoing alert; effectively skip it
+		alert = "";
 
-		if( (jsonAlert.alert_lifecycle == "Ongoing") || (jsonAlert.alert_lifecycle == "Ongoing-Upcoming") ) {
-			// Ongoing alert; just mark it so we know to skip it
-			isOngoing = true;
+	} else {
+		// All other alerts; get information for display
+		alertIcon          = jsonAlert.severity < 4 ? mbtaIconsKey[ jsonAlert.effect ] : mbtaIconsRed[ jsonAlert.effect ];
+		alertTimeframe     = (jsonAlert.timeframe == null) ? "" : " (" + jsonAlert.timeframe + ")";  /**/
+		alertUpdated       = moment( jsonAlert.updated_at, "YYYY-MM-DD" ).format( "MMM D" );
+		alertServiceEffect = jsonAlert.service_effect;
+		alertText          = jsonAlert.header;
 
-		} else {
-			// All other alerts; get information for display
-			alertIcon     = jsonAlert.severity == "Minor" ? mbtaIconsKey[ jsonAlert.effect_name ] : mbtaIconsRed[ jsonAlert.effect_name ];
-			alertTime     = moment.unix( jsonAlert.effect_periods[0].effect_start ).format( "MMM D" );
-			alertSeverity = jsonAlert.severity;
-			alertText     = jsonAlert.header_text;
-
-			// Build a list of directions that the alert affects (should be "inbound" and "outbound" for the commuter rail, for example)
-			var dirs = [];
-			for (var i in jsonAlert.affected_services.services) {
-				var service = jsonAlert.affected_services.services[i];
-				if( typeof(service.direction_name) != 'undefined' ) {
-					if( $.inArray(service.direction_name, dirs) == -1 )
-						dirs.push( service.direction_name );
-				}
-			}
-
-			// Compose the alertDir string
-			alertDir = "";
-			for (var i in dirs) {
-				if( i == 0)
-					alertDir += ' &mdash; ';
-				else
-					alertDir += '/';
-
-				alertDir += dirs[i];
-			}
+		// Find the direction from the direction_id.  We just use 0 as Outbound and 1 as Inbound, because I'm lazy and don't feel
+		//  like grabbing it from a routes call's data/(index)/attributes/direction_names, which is the right way to do it.
+		alertDir = "";
+		if( (typeof(jsonAlert.informed_entity) != 'undefined') && (jsonAlert.informed_entity.length > 0) && (typeof(jsonAlert.informed_entity[0].direction_id) != 'undefined') ) {
+			alertDir = ' &mdash; '
+			if( jsonAlert.informed_entity[0].direction_id == 0 )
+				alertDir += "Outbound";
+			else if( jsonAlert.informed_entity[0].direction_id == 1 )
+				alertDir += "Inbound";
+			else
+				alertDir += "(unknown)";
 		}
 
-	}).fail (function( jqxhr, textStatus, error ) {
-		// Give up and use the header text and default icon
-		alertIcon     = 'mbtai-key_other';
-		alertText     = defaultText;
-		alertTime     = '';
-		alertSeverity = '';
-		alertDir      = "";
+		// Div with icon
+		var alert = '<div class="mbtaEntry ' + alertIcon + '">'
+		alert += '<strong>' + alertUpdated + alertTimeframe + alertDir + '</strong><br>';
+		alert += alertText;
+		alert += '</div>'
 
-	}).always (function() {
-		// Either way, we're done; build our HTML
-		if( isOngoing ) {
-			alert = "";
-		} else {
-			var alert = '<div class="mbtaEntry ' + alertIcon + '">'
-			alert    += '<strong>' + alertTime + ' &mdash; ' + alertSeverity + alertDir + '</strong><br>';
-			alert    += alertText;
-			alert    += '</div>'
-
-			// Make sure this exact string isn't already in the array, since that can happen sometimes for some reaosn
-			if( $.inArray(alert, mbtaAlerts) == -1 ) {
-				// Now we can add it to the array
-				mbtaAlerts[ index ] = alert;
-			}
+		// Make sure this exact string isn't already in the array, since that can happen sometimes for some reaosn
+		if( $.inArray(alert, mbtaAlerts) == -1 ) {
+			// Now we can add it to the array
+			mbtaAlerts[ index ] = alert;
 		}
-
-		// If no more alerts are pending, update the div
-		if( --mbtaAlertsPending == 0 )
-			updateMBTAServiceAlerts_UpadteDiv();
-	});
+	}
 }
 
-// Outer function that updaets the alert list, calling the above functions to get information
+// Outer function that updates the alert list, calling the above functions to get information
 //  about individual alerts
 function updateMBTAServiceAlerts() {
 	// Fail out if none of the config state is set up
-	if( typeof mbtaAPIKey == 'undefined')
-		return;
-
 	if( typeof mbtaRoute == 'undefined')
 		return;
 
+	apiKeyArg = "";
+	if( typeof mbtaAPIKey != 'undefined')
+		apiKeyArg="&api_key=" + mbtaAPIKey;
+
 	// Request the alert headers on this route
-	var url = 'proxy.php?url=http://realtime.mbta.com/developer/api/v2/ALERTHEADERSBYROUTE%3Fapi_key=' + mbtaAPIKey + '%26route=' + mbtaRoute + '%26format=json';
+	var url = 'https://api-v3.mbta.com/alerts?filter[route]=' + mbtaRoute + apiKeyArg;
+	if( usePHPWrapper )
+		url = 'proxy.php?url=' + encodeURI( url );
+
 	$.getJSON(url, function(json, textStatus) {
 		// Reset our global array of alerts
 		mbtaAlerts.length = 0;
-		mbtaAlerts.length = json.alert_headers.length;
-		mbtaAlertsPending = mbtaAlerts.length;
-
+		mbtaAlerts.length = json.data.length;
 		if( mbtaAlerts.length == 0 ) {
 			// No alerts; just clear the block and restart the timer
 			$('.mbta').updateWithText('', 1000);
@@ -200,12 +177,12 @@ function updateMBTAServiceAlerts() {
 
 		} else {
 			// Loop through the alert list and request each alert's information as separate AJAX calls
-			for (var i in json.alert_headers)
-				updateMBTAServiceAlerts_UpadteOne( i, json.alert_headers[i].alert_id, json.alert_headers[i].header_text );
-
-			// When we have alerts pending, we don't restart the timer here; that is done after the last alert
-			//  is udpated from updateMBTAServiceAlerts_UpadteDiv() via updateMBTAServiceAlerts_UpadteOne()
+			for (var i in json.data)
+				updateMBTAServiceAlerts_UpadteOne( i, json.data[i].attributes );
 		}
+
+		// Update the div
+		updateMBTAServiceAlerts_UpadteDiv();
 
 	}).fail (function( jqxhr, textStatus, error ) {
 		// JSON call failed; re-arm the timer for 2 minutes

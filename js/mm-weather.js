@@ -48,15 +48,17 @@ if( typeof tempDecimalPlaces == 'undefined')
 //  one JSON call.
 (function updateWeatherForecast()
 {
-	var dsUnits = '%3Funits='    + darkSkyUnits;		// First argument starts with ?
-	var dsLang  = '%26amp;lang=' + darkSkyLanguage;		// Subsequent arguments start with &, encoded so the PHP script doesn't think they're its arguments
+	var dsUnits = '?units='   + darkSkyUnits;	
+	var dsLang  = '&lang='    + darkSkyLanguage;
 	var url     = 'https://api.forecast.io/forecast/' + darkSkyAPIKey + '/' + darkSkyLat + ',' + darkSkyLon + dsUnits + dsLang;
+
+	url = 'proxy.php?url=' + encodeURI( url );
 
 	// Make sure Dark Sky is properly set up
 	if( darkSkyAPIKey == "Insert your API key from http://developer.forecast.io here" )
 		return;
 
-	$.getJSON('proxy.php?url=' + encodeURI( url ), function(json, textStatus) {
+	$.getJSON(url, function(json, textStatus) {
 		// Update the current weather
 		var current       = json.currently;
 		var temp          = roundTemp(current.temperature);

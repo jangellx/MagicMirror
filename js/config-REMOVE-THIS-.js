@@ -2,6 +2,13 @@
 //--- CLOCK ---------------------------------------------------------------------------------------
 //
 
+// Cross-site scripting requires either enabling CORS in Apache (see
+//  https://awesometoast.com/cors/ for instructions), or using a PHP
+//  wrapper.  To use the wrapper, set this to true.  Note that some
+//  clients require the PHP script (for example, Dark Sky doesn't
+//  support CORS, but MBTA does).
+var usePHPWrapper = false;
+
 // 12 or 24 hours clock.  Set to false for a 24 hours clock
 var clock12Hour = true;
 
@@ -63,7 +70,7 @@ var showWeatherSummary = true;
 //--- MBTA ----------------------------------------------------------------------------------------
 // Boston area train alerts
 
-// Set up your MBTA API key, available here: http://realtime.mbta.com/Portal/
+// Set up your MBTA API key, available here: https://api-v3.mbta.com/
 //var mbtaAPIKey     = "Insert your API key from http://realtime.mbta.com/Portal/ here"
 //var mbtaRoute      = "Insert your MBTA route string here"
 
