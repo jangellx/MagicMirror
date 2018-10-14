@@ -144,7 +144,7 @@ if( typeof tempDecimalPlaces == 'undefined')
 		updateBackground();
 
 	}).fail( function() {
-		// JSON call failed; re-arm the timer for 5 minutes
+		// JSON call failed; re-arm the timer
 		setTimeout(updateWeatherForecast, weatherRefreshRateOnError);
 	});
 })();
