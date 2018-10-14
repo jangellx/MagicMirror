@@ -1,13 +1,13 @@
-//
-//--- CLOCK ---------------------------------------------------------------------------------------
-//
-
 // Cross-site scripting requires either enabling CORS in Apache (see
 //  https://awesometoast.com/cors/ for instructions), or using a PHP
 //  wrapper.  To use the wrapper, set this to true.  Note that some
 //  clients require the PHP script (for example, Dark Sky doesn't
 //  support CORS, but MBTA does).
 var usePHPWrapper = false;
+
+//
+//--- CLOCK ---------------------------------------------------------------------------------------
+//
 
 // 12 or 24 hours clock.  Set to false for a 24 hours clock
 var clock12Hour = true;

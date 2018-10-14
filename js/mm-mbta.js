@@ -2,6 +2,11 @@
 // mm-mbta: MBTA train alerts and informaion for the Magic Mirror
 //
 
+"use strict"
+
+var mbtaRefreshRate        = 300000;		// 300000 == 5 minutes
+var mbtaRefreshRateOnError = 120000;		// 120000 == 2 minutes
+
 // MBTA Service Alerts.  We get 10000 calls a day, so we update every 5 minutes.
 //  As with the weather, we again use the proxy to get the page.  MBTA does support
 //  JSONP, but for whatever reason I just couldn't get that to work.
@@ -99,8 +104,8 @@ function updateMBTAServiceAlerts_UpadteDiv()
 										 + mbtaAlerts.length + ' ' + ((mbtaAlerts.length == 1) ? 'alert' : 'alerts') + '): '
 										 + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 
-	// Rearm the timer for 5 minutes
-	setTimeout( updateMBTAServiceAlerts, 300000);
+	// Rearm the timer
+	setTimeout( updateMBTAServiceAlerts, mbtaRefreshRate);
 }
 
 // Get the information for a single alert.  We wrap this in a function so that we can fake
@@ -111,19 +116,19 @@ function updateMBTAServiceAlerts_UpadteOne( index, jsonAlert )
 
 	if( (jsonAlert.lifecycle == "ONGOING") || (jsonAlert.lifecycle == "ONGOING-UPCOMING") || (jsonAlert.timeframe == "ongoing") ) {
 		// Ongoing alert; effectively skip it
-		alert = "";
+		var alert = "";
 
 	} else {
 		// All other alerts; get information for display
-		alertIcon          = jsonAlert.severity < 4 ? mbtaIconsKey[ jsonAlert.effect ] : mbtaIconsRed[ jsonAlert.effect ];
-		alertTimeframe     = (jsonAlert.timeframe == null) ? "" : " (" + jsonAlert.timeframe + ")";  /**/
-		alertUpdated       = moment( jsonAlert.updated_at, "YYYY-MM-DD" ).format( "MMM D" );
-		alertServiceEffect = jsonAlert.service_effect;
-		alertText          = jsonAlert.header;
+		var alertIcon          = jsonAlert.severity < 4 ? mbtaIconsKey[ jsonAlert.effect ] : mbtaIconsRed[ jsonAlert.effect ];
+		var alertTimeframe     = (jsonAlert.timeframe == null) ? "" : " (" + jsonAlert.timeframe + ")";  /**/
+		var alertUpdated       = moment( jsonAlert.updated_at, "YYYY-MM-DD" ).format( "MMM D" );
+		var alertServiceEffect = jsonAlert.service_effect;
+		var alertText          = jsonAlert.header;
 
 		// Find the direction from the direction_id.  We just use 0 as Outbound and 1 as Inbound, because I'm lazy and don't feel
 		//  like grabbing it from a routes call's data/(index)/attributes/direction_names, which is the right way to do it.
-		alertDir = "";
+		var alertDir = "";
 		if( (typeof(jsonAlert.informed_entity) != 'undefined') && (jsonAlert.informed_entity.length > 0) && (typeof(jsonAlert.informed_entity[0].direction_id) != 'undefined') ) {
 			alertDir = ' &mdash; '
 			if( jsonAlert.informed_entity[0].direction_id == 0 )
@@ -155,7 +160,7 @@ function updateMBTAServiceAlerts() {
 	if( typeof mbtaRoute == 'undefined')
 		return;
 
-	apiKeyArg = "";
+	var apiKeyArg = "";
 	if( typeof mbtaAPIKey != 'undefined')
 		apiKeyArg="&api_key=" + mbtaAPIKey;
 
@@ -169,11 +174,9 @@ function updateMBTAServiceAlerts() {
 		mbtaAlerts.length = 0;
 		mbtaAlerts.length = json.data.length;
 		if( mbtaAlerts.length == 0 ) {
-			// No alerts; just clear the block and restart the timer
+			// No alerts; just clear the block
 			$('.mbta').updateWithText('', 1000);
 			$('.luMBTA').updateWithText('mbta (no alerts):' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
-
-			setTimeout( updateMBTAServiceAlerts, 300000);		// 5 minutes
 
 		} else {
 			// Loop through the alert list and request each alert's information as separate AJAX calls
@@ -181,12 +184,12 @@ function updateMBTAServiceAlerts() {
 				updateMBTAServiceAlerts_UpadteOne( i, json.data[i].attributes );
 		}
 
-		// Update the div
+		// Update the div.  Also re-arms the update timer
 		updateMBTAServiceAlerts_UpadteDiv();
 
 	}).fail (function( jqxhr, textStatus, error ) {
-		// JSON call failed; re-arm the timer for 2 minutes
-		setTimeout( updateMBTAServiceAlerts, 120000);
+		// JSON call failed; re-arm the timer
+		setTimeout( updateMBTAServiceAlerts, mbtaRefreshRateOnError);
 	});
 };
 

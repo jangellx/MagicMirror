@@ -4,6 +4,11 @@
 //  current weather.
 //
 
+"use strict"
+
+var weatherRefreshRate        = 900000;				// 900000 == 15 minutes
+var weatherRefreshRateOnError = 300000;				// 300000 ==  5 minutes
+
 var haveConvertedTemperatureCompliments = false;	// On first run, this tells us that we need to convert the temperature compliments to the local unit system
 
 // Convert from KPH to the Beufort scale
@@ -132,15 +137,15 @@ if( typeof tempDecimalPlaces == 'undefined')
 		// Generate the graph
 		updateWeatherForecast_DrawGraph( json.daily.data, json.hourly.data );
 
-		// Update in 15 minutes
-		setTimeout(updateWeatherForecast, 900000);
+		// Arm update timer
+		setTimeout(updateWeatherForecast, weatherRefreshRate);
 
-		// Update the background iamge
+		// Update the background image
 		updateBackground();
 
 	}).fail( function() {
 		// JSON call failed; re-arm the timer for 5 minutes
-		setTimeout(updateWeatherForecast, 300000);
+		setTimeout(updateWeatherForecast, weatherRefreshRateOnError);
 	});
 })();
 
@@ -208,7 +213,7 @@ function updateWeatherForcast_UpdateWeeklyGraph( dailyData ) {
 	// We just want 7 days of data
 	var filteredDays = dailyData.filter( function(d, i) { return (i < numDays); });
 
-	weekGraphSVG = d3.select( "#weekGraphSVG" );
+	var weekGraphSVG = d3.select( "#weekGraphSVG" );
 	if( weekGraphSVG.empty() ) {
 		// Set up the SVG
 		weekGraphSVG = d3.select(".weekgraph").append("svg")
@@ -388,7 +393,7 @@ function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 	var w = parseInt( $('.tempgraph').css('width') );
 	var h = parseInt( $('.tempgraph').css('height') );
 
-	tempGraphSVG = d3.select( "#tempGraphSVG" );
+	var tempGraphSVG = d3.select( "#tempGraphSVG" );
 	if( tempGraphSVG.empty() ) {
 		// Set up the SVG
 		tempGraphSVG = d3.select(".tempgraph").append("svg")
@@ -701,7 +706,7 @@ function updateWeatherForecast_DrawGraph( dailyData, hourlyData ) {
 		var ticks = (tempGraphRangeOfHours / 6 )+ 1;
 
 		if( tempGraphSVG.selectAll( ".tempGraphHourMarker" ).empty() ) {
-			for( i=0; i < ticks; i++ )
+			for( var i=0; i < ticks; i++ )
 				tempGraphSVG.append("line").attr("class", "tempGraphHourMarker");
 		}
 

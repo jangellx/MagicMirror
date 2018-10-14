@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 	<title>Magic Mirror</title>
@@ -14,6 +15,7 @@
 </head>
 <body>
 
+<div>
     <div class="backgroundTint"></div>
 
 	<div class="top left">
