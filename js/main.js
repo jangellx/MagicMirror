@@ -378,18 +378,17 @@ jQuery(document).ready(function($) {
 	})();
 
 	// RSS Feed Display.  Updates every 5 minutes.
+	//  Uses JQuery's() built-in XML support, as described here:
+	//   https://stackoverflow.com/questions/10943544/how-to-parse-an-rss-feed-using-javascript
 	function fetchNews() {
-		// Yahoow Query Language implementation borrowed from jquery.feedToJSON.js by dboz@airshp.com
-		var yqlURL      = 'http://query.yahooapis.com/v1/public/yql';                            // yql itself
-		var yqlQS       = '?format=json&callback=?&q=select%20*%20from%20rss%20where%20url%3D';  // yql query string
+		// Yahoo Query Language implementation borrowed from jquery.feedToJSON.js by dboz@airshp.com
 		var cachebuster = new Date().getTime();   							                     // yql caches feeds, so we change the feed url each time
 		var index       = 0;
 
 		// Loop through the feed URLs
 		for( var key in feedURLs ) {
-			var url = yqlURL + yqlQS + "'" + encodeURIComponent( feedURLs[key] ) + "'" + "&_nocache=" + cachebuster;
-
-			fetchNewsForURL( index++, url );
+			var url = feedURLs[key] + "&_nocache=" + cachebuster;
+			fetchNewsForURL( index++, "proxy.php?url=" + encodeURI( url ) );
 		}
 
 		// Update again in 5 minutes
@@ -399,36 +398,50 @@ jQuery(document).ready(function($) {
 	fetchNews();
 
 	// Actually get a feed.  The function exists just so we can fake passing
-	//  extra arguments to getJSON().
+	//  extra arguments to get().
+	// We currently support "item" and "entry" lines, although only "item"
+	//  has been tested at this time
 	function fetchNewsForURL( index, url )
 	{
-		$.getJSON( url, function(jsonRSS, textStatus) {
-			if( jsonRSS.query.results != null ) {
-				// Success; get the list of articles
-				var oldestDate = moment().subtract( feedMaxAge.days, "days" ).subtract( feedMaxAge.hours, "hours" );
-				var stories = [];
-				for (var i in jsonRSS.query.results.item) {
-					// Skip articles older than a certain time
-					//  pubDate string is "Tue, 05 Jul 2016 14:25:29 -0400", so we decode that
-					var storyDate = moment( jsonRSS.query.results.item[i].pubDate, "ddd, DD MMM YYYY HH:mm:ss Z" );
-					if( oldestDate.diff( storyDate ) < 0 ) {
-						stories.push( jsonRSS.query.results.item[i].title );
-					}
-				}
+		$.get( url, function(rssData, textStatus) {
+			// Success; find the articles in the feed
+			var oldestDate = moment().subtract( feedMaxAge.days, "days" ).subtract( feedMaxAge.hours, "hours" );
+			var stories = [];
 
-				news[ index ] = stories;
+			// Look for "item" entries
+			$(rssData).find("item").each( function() {
+				addStoryForFeed( stories, oldestDate, $(this) );
+			});
 
-				// Update the "last updated" information with a count of all stories from all feeds
-				var newsCountTotal = 0;
-				for( var i=0; i < news.length; i++ ) {
-					newsCountTotal += news[i].length;
-				}
+			// Look for "entry" entries
+			$(rssData).find("entry").each( function() {
+				addStoryForFeed( stories, oldestDate, $(this) );
+			});
 
-				$('.luRSS').updateWithText('rss (' + newsCountTotal + ' articles/' + news.length + ' feeds): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
+			// Swap to the new story list in the global variable
+			news[ index ] = stories;
+
+			// Update the "last updated" information with a count of all stories from all feeds
+			var newsCountTotal = 0;
+			for( var i=0; i < news.length; i++ ) {
+				newsCountTotal += news[i].length;
 			}
+
+			$('.luRSS').updateWithText('rss (' + newsCountTotal + ' articles/' + news.length + ' feeds): ' + moment().format('h:mm a ddd MMM D YYYY'), 1000);
 		});
 	}
 
+	// Add a single story to the list for the feed.
+	function addStoryForFeed( stories, oldestDate, story ) {
+		// Skip articles older than a certain time
+		var pubDate = moment( story.find("pubDate").text(), "ddd, DD MMM YYYY HH:mm:ss Z" );
+		if( oldestDate.diff( pubDate ) < 0 ) {
+			stories.push( story.find("title").text() );
+		}
+
+//		console.log( "title:" + story.find("title").text() );
+	}
+	
 	(function showNews() {
 		var initialFeed = newsFeedIndex;
 
